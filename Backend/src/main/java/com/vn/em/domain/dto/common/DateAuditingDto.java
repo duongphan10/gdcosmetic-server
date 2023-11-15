@@ -1,7 +1,7 @@
 package com.vn.em.domain.dto.common;
 
-import com.vn.em.constant.CommonConstant;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.vn.em.constant.CommonConstant;
 import lombok.Getter;
 import lombok.Setter;
 

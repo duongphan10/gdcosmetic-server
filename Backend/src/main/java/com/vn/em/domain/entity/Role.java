@@ -23,6 +23,8 @@ public class Role {
     @Column(nullable = false)
     private String name;
 
+    private String description;
+
     //Link to table User
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
     @JsonIgnore

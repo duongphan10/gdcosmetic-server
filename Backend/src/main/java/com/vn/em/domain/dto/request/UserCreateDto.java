@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @AllArgsConstructor
@@ -15,18 +14,11 @@ import javax.validation.constraints.Pattern;
 @Getter
 @Setter
 public class UserCreateDto {
-
-    @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
+    @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
     private String username;
 
-    @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
+    @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=\\S+$).{8,}$", message = ErrorMessage.INVALID_FORMAT_PASSWORD)
     private String password;
-
-    @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
-    private String firstName;
-
-    @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
-    private String lastName;
 
 }

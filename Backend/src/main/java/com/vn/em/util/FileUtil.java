@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -104,8 +105,42 @@ public class FileUtil {
         return newFile;
     }
 
+    public static String saveFile(String uploadPath, MultipartFile multipartFile) {
+        try {
+            Path path = RESOURCES_PATH.resolve(Paths.get(uploadPath));
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+            String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+
+            String fileName = originalFilename.substring(0, originalFilename.lastIndexOf("."));
+            String fileType = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+            String newFile = fileName + "-" + DateTimeUtil.toStringPathFile(LocalDateTime.now()) + fileType;
+            Path filePath;
+            InputStream inputStream = multipartFile.getInputStream();
+            filePath = path.resolve(newFile);
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return uploadPath + "/" + newFile;
+        } catch (IOException ioe) {
+            throw new UploadFileException("Could not save file!");
+        }
+    }
+
     public static void deleteFile(String image, String savePath) {
         Path path = Paths.get(RESOURCES_PATH + "/" + savePath + "/" + image);
+        try {
+            if (Files.exists(path)) {
+                Files.delete(path);
+            }
+        } catch (IOException e) {
+            throw new UploadFileException("Could not delete file: " + image);
+        }
+    }
+
+    public static void deleteFile(String image) {
+        Path path = Paths.get(RESOURCES_PATH + "/" + image);
         try {
             if (Files.exists(path)) {
                 Files.delete(path);

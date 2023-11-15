@@ -1,10 +1,8 @@
 package com.vn.em.domain.entity;
 
-import com.vn.em.domain.entity.common.DateAuditing;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vn.em.domain.entity.common.DateAuditing;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Nationalized;
 
 import javax.persistence.*;
 
@@ -27,6 +25,9 @@ public class User extends DateAuditing {
     @Column(nullable = false)
     @JsonIgnore
     private String password;
+
+    @Column(nullable = true)
+    private String avatar;
 
     //Link to table Role
     @ManyToOne

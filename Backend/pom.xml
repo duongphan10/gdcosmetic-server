@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.vn</groupId>
-    <artifactId>EM</artifactId>
+    <artifactId>em</artifactId>
     <version>1.0</version>
-    <name>EM</name>
-    <description>employee management</description>
+    <name>EM-GDCosmetic</name>
+    <description>EM-GDCosmetic</description>
 
     <properties>
         <java.version>11</java.version>

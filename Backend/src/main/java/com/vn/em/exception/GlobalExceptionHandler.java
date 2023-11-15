@@ -74,6 +74,7 @@ public class GlobalExceptionHandler {
                 LocaleContextHolder.getLocale());
         return VsResponseUtil.error(HttpStatus.BAD_REQUEST, message);
     }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<RestData<?>> handlerInternalServerError(Exception ex) {

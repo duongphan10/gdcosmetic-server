@@ -12,9 +12,8 @@ import lombok.Setter;
 @Setter
 public class UserDto extends DateAuditingDto {
     private Integer id;
-
     private String username;
-
+    private String avatar;
     private String roleName;
 
 }

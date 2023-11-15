@@ -1,24 +1,30 @@
 package com.vn.em.domain.mapper;
 
 import com.vn.em.domain.dto.request.UserCreateDto;
+import com.vn.em.domain.dto.request.UserUpdateDto;
 import com.vn.em.domain.dto.response.UserDto;
 import com.vn.em.domain.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
-
-    User toUser(UserCreateDto userCreateDTO);
+    @Mappings({
+            @Mapping(target = "avatar", ignore = true)
+    })
+    User mapUserCreateToUser(UserCreateDto userCreateDTO);
 
     @Mappings({
             @Mapping(target = "roleName", source = "role.name"),
     })
-    UserDto toUserDto(User user);
+    UserDto mapUserToUserDto(User user);
 
-    List<UserDto> toUserDtos(List<User> user);
+    List<UserDto> mapUsersToUserDtos(List<User> user);
+
+    @Mappings({
+            @Mapping(target = "avatar", ignore = true)
+    })
+    void updateUser(@MappingTarget User user, UserUpdateDto userUpdateDto);
 
 }

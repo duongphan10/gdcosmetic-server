@@ -1,9 +1,9 @@
 package com.vn.em.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vn.em.base.RestData;
 import com.vn.em.constant.ErrorMessage;
 import com.vn.em.util.BeanUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

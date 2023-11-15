@@ -1,7 +1,6 @@
 package com.vn.em.validator.annotation;
 
 
-
 import com.vn.em.validator.IdCardNumberValidator;
 
 import javax.validation.Constraint;
