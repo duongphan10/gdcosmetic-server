@@ -12,5 +12,7 @@ public class MessageConstant {
     public static final String VERIFY_FORGOT_PASSWORD_EXPIRED = "Verification code expired";
     public static final String CREATE_NEW_PASSWORD_SUCCESSFULLY = "Create new password successfully";
     public static final String DELETE_USER_SUCCESSFULLY = "You deleted the user successfully";
+    public static final String DELETE_DEPARTMENT_SUCCESSFULLY = "You deleted the department successfully";
+    public static final String DELETE_POSITION_SUCCESSFULLY = "You deleted the position successfully";
 
 }

@@ -8,6 +8,7 @@ public class ErrorMessage {
     public static final String FORBIDDEN_UPDATE_DELETE = "exception.forbidden.update-delete";
     public static final String ERR_EXCEPTION_MAX_UPLOAD_FILE_SIZE = "exception.max.upload.file.size";
     public static final String ERR_EXCEPTION_MULTIPART = "exception.multipart";
+    public static final String ERR_EXCEPTION_INVALID_JSON_REQUEST = "exception.invalid.json.request";
 
     //error validation dto
     public static final String INVALID_SOME_THING_FIELD = "invalid.general";
@@ -32,6 +33,14 @@ public class ErrorMessage {
         public static final String ERR_NOT_FOUND_USERNAME = "exception.user.not.found.username";
         public static final String ERR_NOT_FOUND_ID = "exception.user.not.found.id";
         public static final String ERR_ALREADY_EXIST_USER = "exception.user.already.exist";
+    }
+
+    public static class Department {
+        public static final String ERR_NOT_FOUND_ID = "exception.department.not.found.id";
+    }
+
+    public static class Position {
+        public static final String ERR_NOT_FOUND_ID = "exception.position.not.found.id";
     }
 
 }
