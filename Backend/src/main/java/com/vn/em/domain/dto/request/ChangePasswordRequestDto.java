@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @AllArgsConstructor
@@ -13,10 +13,10 @@ import javax.validation.constraints.Pattern;
 @Getter
 public class ChangePasswordRequestDto {
 
-    @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
+    @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
     private String currentPassword;
 
-    @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
+    @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=\\S+$).{8,}$", message = ErrorMessage.INVALID_FORMAT_PASSWORD)
     private String newPassword;
 }

@@ -17,11 +17,11 @@ import javax.persistence.MappedSuperclass;
 public abstract class UserAuditing {
 
     @CreatedBy
-    @Column(updatable = false)
-    private String createdBy;
+    @Column(nullable = false, updatable = false)
+    private Integer createdBy;
 
     @LastModifiedBy
     @Column(nullable = false)
-    private String lastModifiedBy;
+    private Integer lastModifiedBy;
 
 }

@@ -7,8 +7,8 @@ import lombok.Setter;
 @Getter
 public abstract class UserDateAuditingDto extends DateAuditingDto {
 
-    private String createdBy;
+    private Integer createdBy;
 
-    private String lastModifiedBy;
+    private Integer lastModifiedBy;
 
 }

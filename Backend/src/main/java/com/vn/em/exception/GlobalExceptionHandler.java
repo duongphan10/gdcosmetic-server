@@ -10,8 +10,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -45,7 +47,26 @@ public class GlobalExceptionHandler {
         return VsResponseUtil.error(HttpStatus.BAD_REQUEST, result);
     }
 
-    //Error validate for body
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<RestData<?>> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        Map<String, String> result = new LinkedHashMap<>();
+        String fieldName = ex.getParameterName();
+        String errorMessage = "Required request parameter " + fieldName + " is not present";
+        result.put(fieldName, errorMessage);
+
+        return VsResponseUtil.error(HttpStatus.BAD_REQUEST, result);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<RestData<?>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        //log.error(ex.getMessage(), ex);
+        String message = messageSource.getMessage(ErrorMessage.ERR_EXCEPTION_INVALID_JSON_REQUEST, null,
+                LocaleContextHolder.getLocale());
+        return VsResponseUtil.error(HttpStatus.BAD_REQUEST, message);
+    }
+
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<RestData<?>> handleValidException(BindException ex) {
