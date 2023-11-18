@@ -11,6 +11,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -80,28 +82,35 @@ public class GlobalExceptionHandler {
         return VsResponseUtil.error(HttpStatus.BAD_REQUEST, result);
     }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<RestData<?>> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex) {
-        log.error(ex.getMessage(), ex);
-        String message = messageSource.getMessage(ErrorMessage.ERR_EXCEPTION_MAX_UPLOAD_FILE_SIZE, null,
-                LocaleContextHolder.getLocale());
-        return VsResponseUtil.error(HttpStatus.BAD_REQUEST, message);
-    }
-
-    @ExceptionHandler(MultipartException.class)
-    public ResponseEntity<RestData<?>> handleMultipartException(MultipartException ex) {
-        log.error(ex.getMessage(), ex);
-        String message = messageSource.getMessage(ErrorMessage.ERR_EXCEPTION_MULTIPART, null,
-                LocaleContextHolder.getLocale());
-        return VsResponseUtil.error(HttpStatus.BAD_REQUEST, message);
-    }
-
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    //@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<RestData<?>> handlerInternalServerError(Exception ex) {
         log.error(ex.getMessage(), ex);
-        String message = messageSource.getMessage(ErrorMessage.ERR_EXCEPTION_GENERAL, null,
-                LocaleContextHolder.getLocale());
+        String message = messageSource.getMessage(ErrorMessage.ERR_EXCEPTION_GENERAL, null, LocaleContextHolder.getLocale());
+
+        if (ex instanceof DisabledException) {
+            message = messageSource.getMessage(ErrorMessage.ERR_EXCEPTION_DISABLED, null,
+                    LocaleContextHolder.getLocale());
+            return VsResponseUtil.error(HttpStatus.FORBIDDEN, message);
+        }
+
+        if (ex instanceof AccessDeniedException) {
+            message = messageSource.getMessage(ErrorMessage.FORBIDDEN, null,
+                    LocaleContextHolder.getLocale());
+            return VsResponseUtil.error(HttpStatus.FORBIDDEN, message);
+        }
+
+        if (ex instanceof MaxUploadSizeExceededException) {
+            message = messageSource.getMessage(ErrorMessage.ERR_EXCEPTION_MAX_UPLOAD_FILE_SIZE, null,
+                    LocaleContextHolder.getLocale());
+            return VsResponseUtil.error(HttpStatus.BAD_REQUEST, message);
+        }
+
+        if (ex instanceof MultipartException) {
+            message = messageSource.getMessage(ErrorMessage.ERR_EXCEPTION_MULTIPART, null,
+                    LocaleContextHolder.getLocale());
+            return VsResponseUtil.error(HttpStatus.BAD_REQUEST, message);
+        }
         return VsResponseUtil.error(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
 
