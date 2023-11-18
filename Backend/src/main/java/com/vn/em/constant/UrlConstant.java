@@ -19,8 +19,8 @@ public class UrlConstant {
         public static final String GET_ALL_USER = PRE_FIX + "/all";
         public static final String CREATE = PRE_FIX + "/create";
         public static final String UPDATE = PRE_FIX + "/{id}";
-        public static final String CHANGE_AVATAR = PRE_FIX + "/change-avatar";
-        public static final String CHANGE_PASSWORD = PRE_FIX + "/change-password";
+        public static final String CHANGE_AVATAR = PRE_FIX + "/change/avatar";
+        public static final String CHANGE_PASSWORD = PRE_FIX + "/change/password";
         public static final String DELETE = PRE_FIX + "/{id}";
 
         private User() {
@@ -48,6 +48,19 @@ public class UrlConstant {
         public static final String DELETE = PRE_FIX + "/{id}";
 
         private Position() {
+        }
+    }
+
+    public static class Employee {
+        public static final String PRE_FIX = "/employee";
+        public static final String GET_BY_ID = PRE_FIX + "/{id}";
+        public static final String GET_BY_CODE = PRE_FIX + "/get";
+        public static final String GET_ALL = PRE_FIX + "/all";
+        public static final String CREATE = PRE_FIX + "/create";
+        public static final String UPDATE = PRE_FIX + "/{id}";
+        public static final String DELETE = PRE_FIX + "/{id}";
+
+        private Employee() {
         }
     }
 

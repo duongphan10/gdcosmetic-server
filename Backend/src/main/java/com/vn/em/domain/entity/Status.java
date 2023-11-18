@@ -1,6 +1,5 @@
 package com.vn.em.domain.entity;
 
-import com.vn.em.domain.entity.common.UserDateAuditing;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,8 +11,8 @@ import java.util.List;
 @Setter
 @Builder
 @Entity
-@Table(name = "positions")
-public class Position extends UserDateAuditing {
+@Table(name = "status")
+public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -22,11 +21,7 @@ public class Position extends UserDateAuditing {
     @Column(nullable = true)
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "FK_POSITION_DEPARTMENT"))
-    private Department department;
-
-    @OneToMany(mappedBy = "position", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "status", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Employee> employees;
 
 }

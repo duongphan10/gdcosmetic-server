@@ -27,6 +27,7 @@ public class CommonConstant {
     public static final String CONTENT_TYPE_DOCUMENT_TEXT = "plain html css javascript xml csv markdown rtf x-java-source x-python x-c x-c++ x-csharp";
     public static final String UPLOAD_PATH_IMAGE = "upload/images";
     public static final String UPLOAD_PATH_FILE = "upload/files";
+    public static final String COMPANY_CODE = "GD";
     public static final Integer MAX_NUMBER_IMAGE = 5;
     public static final Integer MAX_NUMBER_VIDEO = 1;
     public static final Long MAX_IMAGE_SIZE_MB = 5L;
