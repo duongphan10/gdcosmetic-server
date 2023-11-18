@@ -4,15 +4,19 @@ import com.vn.em.constant.*;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
 import com.vn.em.domain.dto.pagination.PaginationResponseDto;
 import com.vn.em.domain.dto.pagination.PagingMeta;
+import com.vn.em.domain.dto.request.ChangeAvatarRequestDto;
 import com.vn.em.domain.dto.request.ChangePasswordRequestDto;
 import com.vn.em.domain.dto.request.UserCreateDto;
 import com.vn.em.domain.dto.request.UserUpdateDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
 import com.vn.em.domain.dto.response.UserDto;
+import com.vn.em.domain.entity.Employee;
 import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.UserMapper;
 import com.vn.em.exception.AlreadyExistException;
 import com.vn.em.exception.NotFoundException;
+import com.vn.em.repository.DepartmentRepository;
+import com.vn.em.repository.EmployeeRepository;
 import com.vn.em.repository.RoleRepository;
 import com.vn.em.repository.UserRepository;
 import com.vn.em.service.UserService;
@@ -21,9 +25,9 @@ import com.vn.em.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,6 +36,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -47,16 +53,23 @@ public class UserServiceImpl implements UserService {
     public UserDto getCurrentUser(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
+        if (!user.isEnabled()) {
+            throw new DisabledException(ErrorMessage.ERR_EXCEPTION_DISABLED);
+        }
         return userMapper.mapUserToUserDto(user);
     }
 
     @Override
-    public PaginationResponseDto<UserDto> getAllUsers(PaginationFullRequestDto paginationFullRequestDto) {
+    public PaginationResponseDto<UserDto> getAll(Integer departmentId, Boolean enabled, PaginationFullRequestDto paginationFullRequestDto) {
+        if (departmentId != null) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
         //Pagination
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.USER);
 
         //Create Output
-        Page<User> userPage = userRepository.findAll(pageable);
+        Page<User> userPage = userRepository.getAll(paginationFullRequestDto.getKeyword(), departmentId, enabled, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.USER, userPage);
         List<UserDto> userDtos = userMapper.mapUsersToUserDtos(userPage.getContent());
@@ -66,13 +79,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserCreateDto userCreateDto) {
+        Employee employee = employeeRepository.findById(userCreateDto.getEmployeeId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND_ID, new String[]{userCreateDto.getEmployeeId().toString()}));
+        if (userRepository.existsByEmployee(employee)) {
+            throw new AlreadyExistException(ErrorMessage.Employee.ERR_ALREADY_EXIST_USER);
+        }
+
         if (userRepository.existsByUsername(userCreateDto.getUsername())) {
-            throw new AlreadyExistException(ErrorMessage.User.ERR_ALREADY_EXIST_USER,
+            throw new AlreadyExistException(ErrorMessage.User.ERR_ALREADY_EXIST,
                     new String[]{"username: " + userCreateDto.getUsername()});
         }
         User user = userMapper.mapUserCreateToUser(userCreateDto);
         user.setPassword(passwordEncoder.encode(userCreateDto.getPassword()));
         user.setRole(roleRepository.findByRoleName(RoleConstant.USER));
+        user.setEmployee(employee);
         return userMapper.mapUserToUserDto(userRepository.save(user));
     }
 
@@ -81,7 +101,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         if (userRepository.existsByUsername(userUpdateDto.getUsername())) {
-            throw new AlreadyExistException(ErrorMessage.User.ERR_ALREADY_EXIST_USER,
+            throw new AlreadyExistException(ErrorMessage.User.ERR_ALREADY_EXIST,
                     new String[]{"username: " + userUpdateDto.getUsername()});
         }
         userMapper.updateUser(user, userUpdateDto);
@@ -89,13 +109,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto changeAvatar(Integer id, MultipartFile avatar) {
+    public UserDto changeAvatar(Integer id, ChangeAvatarRequestDto changeAvatarRequestDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
-        if (!user.getAvatar().isEmpty()) {
+        if (user.getAvatar() != null) {
             FileUtil.deleteFile(user.getAvatar());
         }
-        user.setAvatar(FileUtil.saveFile(CommonConstant.UPLOAD_PATH_IMAGE, avatar));
+        user.setAvatar(FileUtil.saveFile(CommonConstant.UPLOAD_PATH_IMAGE, changeAvatarRequestDto.getAvatar()));
         return userMapper.mapUserToUserDto(userRepository.save(user));
     }
 

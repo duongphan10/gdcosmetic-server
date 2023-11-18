@@ -2,16 +2,15 @@ package com.vn.em.controller;
 
 import com.vn.em.base.RestApiV1;
 import com.vn.em.base.VsResponseUtil;
-import com.vn.em.constant.ErrorMessage;
 import com.vn.em.constant.UrlConstant;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
+import com.vn.em.domain.dto.request.ChangeAvatarRequestDto;
 import com.vn.em.domain.dto.request.ChangePasswordRequestDto;
 import com.vn.em.domain.dto.request.UserCreateDto;
 import com.vn.em.domain.dto.request.UserUpdateDto;
 import com.vn.em.security.CurrentUser;
 import com.vn.em.security.UserPrincipal;
 import com.vn.em.service.UserService;
-import com.vn.em.validator.annotation.ValidFileImage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,10 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @RequiredArgsConstructor
 @RestApiV1
@@ -46,10 +43,12 @@ public class UserController {
     }
 
     @Tag(name = "user-controller")
-    @Operation(summary = "API get all customer")
+    @Operation(summary = "API get all user")
     @GetMapping(UrlConstant.User.GET_ALL_USER)
-    public ResponseEntity<?> getAllUsers(@Valid @ParameterObject PaginationFullRequestDto requestDTO) {
-        return VsResponseUtil.success(userService.getAllUsers(requestDTO));
+    public ResponseEntity<?> getAllUsers(@RequestParam(name = "departmentId", required = false) Integer departmentId,
+                                         @RequestParam(name = "enabled", required = false) Boolean enabled,
+                                         @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
+        return VsResponseUtil.success(userService.getAll(departmentId, enabled, paginationFullRequestDto));
     }
 
     @Tag(name = "user-controller")
@@ -70,12 +69,11 @@ public class UserController {
 
     @Tag(name = "user-controller")
     @Operation(summary = "API change avatar")
-    @PatchMapping(UrlConstant.User.CHANGE_AVATAR)
+    @PatchMapping(value = UrlConstant.User.CHANGE_AVATAR)
     public ResponseEntity<?> changeAvatar(@Parameter(name = "principal", hidden = true)
                                           @CurrentUser UserPrincipal user,
-                                          @Valid @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
-                                          @ValidFileImage @RequestParam MultipartFile avatar) {
-        return VsResponseUtil.success(userService.changeAvatar(user.getId(), avatar));
+                                          @Valid @ModelAttribute ChangeAvatarRequestDto changeAvatarRequestDto) {
+        return VsResponseUtil.success(userService.changeAvatar(user.getId(), changeAvatarRequestDto));
     }
 
     @Tag(name = "user-controller")

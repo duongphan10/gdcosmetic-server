@@ -29,9 +29,16 @@ public class User extends DateAuditing {
     @Column(nullable = true)
     private String avatar;
 
+    @Column(nullable = false)
+    private boolean enabled = true;
+
     //Link to table Role
     @ManyToOne
     @JoinColumn(name = "role_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE"))
     private Role role;
+
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    private Employee employee;
 
 }
