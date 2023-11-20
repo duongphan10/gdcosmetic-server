@@ -23,6 +23,7 @@ public class ErrorMessage {
     public static final String INVALID_DATE = "invalid.date-format";
     public static final String INVALID_DATE_FEATURE = "invalid.date-future";
     public static final String INVALID_DATETIME = "invalid.datetime-format";
+    public static final String INVALID_STATUS_UPDATE_SALARY_ADJUSTMENT = "invalid.status.update.salary.adjustment";
 
     public static class Auth {
         public static final String ERR_INCORRECT_USERNAME = "exception.auth.incorrect.username";
@@ -37,6 +38,10 @@ public class ErrorMessage {
         public static final String ERR_NOT_FOUND_USERNAME = "exception.user.not.found.username";
         public static final String ERR_NOT_FOUND_ID = "exception.user.not.found.id";
         public static final String ERR_ALREADY_EXIST = "exception.user.already.exist";
+    }
+
+    public static class Role {
+        public static final String ERR_NOT_FOUND_ID = "exception.role.not.found.id";
     }
 
     public static class Department {
@@ -56,6 +61,10 @@ public class ErrorMessage {
     public static class Status {
         public static final String ERR_NOT_FOUND_ID = "exception.status.not.found.id";
         public static final String ERR_STATUS_CREATE_EMPLOYEE = "exception.status.create.employee";
+    }
+
+    public static class SalaryAdjustment {
+        public static final String ERR_NOT_FOUND_ID = "exception.salary.adjustment.not.found.id";
     }
 
 }

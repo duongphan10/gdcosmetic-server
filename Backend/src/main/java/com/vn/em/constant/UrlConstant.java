@@ -64,4 +64,17 @@ public class UrlConstant {
         }
     }
 
+    public static class SalaryAdjustment {
+        public static final String PRE_FIX = "/salary-adjustment";
+        public static final String GET_BY_ID = PRE_FIX + "/{id}";
+        public static final String GET_ALL = PRE_FIX + "/all";
+        public static final String GET_ALL_BY_USER_CREATE = PRE_FIX + "/me/all";
+        public static final String CREATE = PRE_FIX + "/create";
+        public static final String UPDATE = PRE_FIX + "/{id}";
+        public static final String DELETE = PRE_FIX + "/{id}";
+
+        private SalaryAdjustment() {
+        }
+    }
+
 }

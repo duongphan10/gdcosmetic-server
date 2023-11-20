@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -60,4 +61,7 @@ public class Employee extends UserDateAuditing {
 
     @OneToOne(mappedBy = "employee")
     private User user;
+
+    @OneToMany(mappedBy = "employee", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<SalaryAdjustment> salaryAdjustments;
 }

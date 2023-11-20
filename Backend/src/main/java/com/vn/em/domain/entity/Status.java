@@ -24,4 +24,7 @@ public class Status {
     @OneToMany(mappedBy = "status", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Employee> employees;
 
+    @OneToMany(mappedBy = "status", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<SalaryAdjustment> salaryAdjustments;
+
 }
