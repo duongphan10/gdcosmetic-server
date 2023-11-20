@@ -11,6 +11,7 @@ import com.vn.em.domain.dto.request.UserUpdateDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
 import com.vn.em.domain.dto.response.UserDto;
 import com.vn.em.domain.entity.Employee;
+import com.vn.em.domain.entity.Role;
 import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.UserMapper;
 import com.vn.em.exception.AlreadyExistException;
@@ -81,6 +82,8 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserCreateDto userCreateDto) {
         Employee employee = employeeRepository.findById(userCreateDto.getEmployeeId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND_ID, new String[]{userCreateDto.getEmployeeId().toString()}));
+        Role role = roleRepository.findById(userCreateDto.getRoleId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Role.ERR_NOT_FOUND_ID, new String[]{userCreateDto.getRoleId().toString()}));
         if (userRepository.existsByEmployee(employee)) {
             throw new AlreadyExistException(ErrorMessage.Employee.ERR_ALREADY_EXIST_USER);
         }
@@ -91,8 +94,9 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.mapUserCreateToUser(userCreateDto);
         user.setPassword(passwordEncoder.encode(userCreateDto.getPassword()));
-        user.setRole(roleRepository.findByRoleName(RoleConstant.USER));
         user.setEmployee(employee);
+        user.setRole(role);
+        user.setEnabled(true);
         return userMapper.mapUserToUserDto(userRepository.save(user));
     }
 
@@ -100,11 +104,14 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUserById(Integer id, UserUpdateDto userUpdateDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
+        Role role = roleRepository.findById(userUpdateDto.getRoleId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Role.ERR_NOT_FOUND_ID, new String[]{userUpdateDto.getRoleId().toString()}));
         if (userRepository.existsByUsername(userUpdateDto.getUsername())) {
             throw new AlreadyExistException(ErrorMessage.User.ERR_ALREADY_EXIST,
                     new String[]{"username: " + userUpdateDto.getUsername()});
         }
         userMapper.updateUser(user, userUpdateDto);
+        user.setRole(role);
         return userMapper.mapUserToUserDto(userRepository.save(user));
     }
 

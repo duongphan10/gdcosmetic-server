@@ -26,4 +26,7 @@ public class UserCreateDto {
 
     @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
     private Integer employeeId;
+
+    @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
+    private Integer roleId;
 }
