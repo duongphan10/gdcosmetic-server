@@ -1,5 +1,6 @@
 package com.vn.em.domain.mapper;
 
+import com.vn.em.constant.CommonConstant;
 import com.vn.em.domain.dto.request.EmployeeCreateDto;
 import com.vn.em.domain.dto.request.EmployeeUpdateDto;
 import com.vn.em.domain.dto.response.EmployeeDto;
@@ -13,6 +14,7 @@ public interface EmployeeMapper {
 
     @Mappings({
             @Mapping(target = "employeeCode", ignore = true),
+            @Mapping(target = "birthday", source = "birthday", dateFormat = CommonConstant.PATTERN_DATE),
             @Mapping(target = "image", ignore = true)
     })
     Employee mapEmployeeCreateDtoToEmployee(EmployeeCreateDto employeeCreateDto);
@@ -32,8 +34,9 @@ public interface EmployeeMapper {
     List<EmployeeDto> mapEmployeesToEmployeeDtos(List<Employee> employees);
 
     @Mappings({
-            @Mapping(target = "employee.employeeCode", ignore = true),
-            @Mapping(target = "employee.image", ignore = true)
+            @Mapping(target = "employeeCode", ignore = true),
+            @Mapping(target = "birthday", source = "birthday", dateFormat = CommonConstant.PATTERN_DATE),
+            @Mapping(target = "image", ignore = true)
     })
     void update(@MappingTarget Employee employee, EmployeeUpdateDto employeeUpdateDto);
 

@@ -25,7 +25,7 @@ public class Employee extends UserDateAuditing {
     @Column(nullable = false)
     private Boolean gender;
     @Column(nullable = false)
-    private String birthday;
+    private LocalDate birthday;
     @Column(nullable = false)
     private String hometown;
     @Column(nullable = false)
@@ -64,4 +64,8 @@ public class Employee extends UserDateAuditing {
 
     @OneToMany(mappedBy = "employee", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<SalaryAdjustment> salaryAdjustments;
+
+    @OneToMany(mappedBy = "employee", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Recognition> recognitions;
+
 }

@@ -16,5 +16,6 @@ public class MessageConstant {
     public static final String DELETE_POSITION_SUCCESSFULLY = "You deleted the position successfully";
     public static final String DELETE_EMPLOYEE_SUCCESSFULLY = "You deleted the employee successfully";
     public static final String DELETE_SALARY_ADJUSTMENT_SUCCESSFULLY = "You deleted the salary adjustment successfully";
+    public static final String DELETE_RECOGNITION_SUCCESSFULLY = "You deleted the recognition successfully";
 
 }

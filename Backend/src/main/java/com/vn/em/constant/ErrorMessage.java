@@ -24,6 +24,7 @@ public class ErrorMessage {
     public static final String INVALID_DATE_FEATURE = "invalid.date-future";
     public static final String INVALID_DATETIME = "invalid.datetime-format";
     public static final String INVALID_STATUS_UPDATE_SALARY_ADJUSTMENT = "invalid.status.update.salary.adjustment";
+    public static final String INVALID_STATUS_UPDATE_RECOGNITION = "invalid.status.update.recognition";
 
     public static class Auth {
         public static final String ERR_INCORRECT_USERNAME = "exception.auth.incorrect.username";
@@ -65,6 +66,10 @@ public class ErrorMessage {
 
     public static class SalaryAdjustment {
         public static final String ERR_NOT_FOUND_ID = "exception.salary.adjustment.not.found.id";
+    }
+
+    public static class Recognition {
+        public static final String ERR_NOT_FOUND_ID = "exception.recognition.not.found.id";
     }
 
 }
