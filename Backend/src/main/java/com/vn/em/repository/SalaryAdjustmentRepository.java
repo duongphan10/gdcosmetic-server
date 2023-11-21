@@ -26,12 +26,12 @@ public interface SalaryAdjustmentRepository extends JpaRepository<SalaryAdjustme
             "INNER JOIN employees e ON s.employee_id = e.id " +
             "INNER JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
-            "    s.created_by = ?1 " +
-            "    AND (?2 = '' OR (LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?2, '%')) " +
+            "   s.created_by = ?1 " +
+            "   AND (?2 = '' OR (LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?2, '%')) " +
             "                   OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', ?2, '%')) " +
             "                   OR LOWER(p.name) LIKE LOWER(CONCAT('%', ?2, '%'))) " +
-            "    ) " +
-            "    AND p.department_id = ?3 " +
-            "    AND (?4 IS NULL OR s.status_id = ?4)", nativeQuery = true)
+            "   ) " +
+            "   AND (?3 IS NULL OR p.department_id = ?3) " +
+            "   AND (?4 IS NULL OR s.status_id = ?4)", nativeQuery = true)
     Page<SalaryAdjustment> getAllMyCreate(Integer userId, String keyword, Integer departmentId, Integer statusId, Pageable pageable);
 }

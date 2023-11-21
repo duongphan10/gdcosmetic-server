@@ -44,11 +44,12 @@ public class SalaryAdjustmentController {
     @Tag(name = "salary-adjustment-controller")
     @Operation(summary = "API get all my salary adjustment create")
     @GetMapping(UrlConstant.SalaryAdjustment.GET_ALL_BY_USER_CREATE)
-    public ResponseEntity<?> getAllMySalaryAdjustmentCreate(@RequestParam(name = "statusId", required = false) Integer statusId,
+    public ResponseEntity<?> getAllMySalaryAdjustmentCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
+                                                            @RequestParam(name = "statusId", required = false) Integer statusId,
                                                             @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto,
                                                             @Parameter(name = "principal", hidden = true)
                                                             @CurrentUser UserPrincipal user) {
-        return VsResponseUtil.success(salaryAdjustmentService.getAllMyCreate(user.getId(), statusId, paginationFullRequestDto));
+        return VsResponseUtil.success(salaryAdjustmentService.getAllMyCreate(user.getId(), departmentId, statusId, paginationFullRequestDto));
     }
 
     @Tag(name = "salary-adjustment-controller")

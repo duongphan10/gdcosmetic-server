@@ -13,7 +13,7 @@ public interface SalaryAdjustmentService {
 
     PaginationResponseDto<SalaryAdjustmentDto> getAll(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
 
-    PaginationResponseDto<SalaryAdjustmentDto> getAllMyCreate(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
+    PaginationResponseDto<SalaryAdjustmentDto> getAllMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
 
     SalaryAdjustmentDto create(SalaryAdjustmentCreateDto salaryAdjustmentCreateDto);
 

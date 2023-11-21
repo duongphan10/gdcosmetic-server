@@ -14,7 +14,6 @@ import com.vn.em.domain.dto.response.SalaryAdjustmentDto;
 import com.vn.em.domain.entity.Employee;
 import com.vn.em.domain.entity.SalaryAdjustment;
 import com.vn.em.domain.entity.Status;
-import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.SalaryAdjustmentMapper;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.*;
@@ -67,16 +66,20 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
     }
 
     @Override
-    public PaginationResponseDto<SalaryAdjustmentDto> getAllMyCreate(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
-        User user = userRepository.findById(userId)
+    public PaginationResponseDto<SalaryAdjustmentDto> getAllMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
+        userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
         if (statusId != null) {
             statusRepository.findById(statusId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
         }
+        if (departmentId != null) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.SALARY_ADJUSTMENT);
 
-        Page<SalaryAdjustment> salaryAdjustmentPage = salaryAdjustmentRepository.getAllMyCreate(userId, paginationFullRequestDto.getKeyword(), user.getEmployee().getPosition().getDepartment().getId(), statusId, pageable);
+        Page<SalaryAdjustment> salaryAdjustmentPage = salaryAdjustmentRepository.getAllMyCreate(userId, paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.SALARY_ADJUSTMENT, salaryAdjustmentPage);
         List<SalaryAdjustmentDto> salaryAdjustmentDtos = salaryAdjustmentMapper.mapSalaryAdjustmentsToSalaryAdjustmentDtos(salaryAdjustmentPage.getContent());
