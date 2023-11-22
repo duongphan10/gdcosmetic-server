@@ -60,4 +60,22 @@ public enum SortByDataConstant implements SortByInterface {
         }
     },
 
+    ATTENDANCE {
+        @Override
+        public String getSortBy(String sortBy) {
+            switch (sortBy) {
+                case "year":
+                    return "year";
+                case "month":
+                    return "month";
+                case "actualWorkingDays":
+                    return "actual_working_days";
+                case "lastModifiedDate":
+                    return "last_modified_date";
+                default:
+                    return "created_date";
+            }
+        }
+    },
+
 }
