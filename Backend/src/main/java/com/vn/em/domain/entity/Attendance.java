@@ -26,6 +26,8 @@ public class Attendance extends UserDateAuditing {
     private Integer lateArrival;
     @Column(nullable = false, columnDefinition = "FLOAT(3, 1)")
     private Float workingDaysOfMonth;
+    @Column(nullable = true)
+    private String note;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", foreignKey = @ForeignKey(name = "FK_ATTENDANCE_EMPLOYEE"))

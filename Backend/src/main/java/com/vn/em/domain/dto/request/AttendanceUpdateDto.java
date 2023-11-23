@@ -18,5 +18,6 @@ public class AttendanceUpdateDto {
     private Float actualWorkingDays;
     @PositiveOrZero(message = ErrorMessage.INVALID_NUMBER_POSITIVE_OR_ZERO)
     private Integer lateArrival;
+    private String note;
 
 }

@@ -17,6 +17,7 @@ public class AttendanceDto extends UserDateAuditingDto {
     private Float actualWorkingDays;
     private Integer lateArrival;
     private Float workingDaysOfMonth;
+    private String note;
     private Integer employeeId;
 
 }
