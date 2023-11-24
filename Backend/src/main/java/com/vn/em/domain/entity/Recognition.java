@@ -18,8 +18,6 @@ public class Recognition extends UserDateAuditing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(nullable = false)
-    private LocalDate date;
-    @Column(nullable = false)
     private Boolean type;
     @Column(nullable = false)
     private String reason;
@@ -27,6 +25,8 @@ public class Recognition extends UserDateAuditing {
     private String description;
     @Column(nullable = true)
     private Long amount;
+    @Column(nullable = true)
+    private LocalDate date;
     @Column(nullable = true)
     private String rejectionReason;
 

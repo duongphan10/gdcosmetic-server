@@ -1,7 +1,6 @@
 package com.vn.em.domain.dto.request;
 
 import com.vn.em.constant.ErrorMessage;
-import com.vn.em.validator.annotation.ValidDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +14,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class RecognitionCreateDto {
-    @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
-    @ValidDate
-    private String date;
     @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
     private Boolean type;
     @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)

@@ -34,4 +34,19 @@ public interface RecognitionRepository extends JpaRepository<Recognition, Intege
             "   AND (?3 IS NULL OR p.department_id = ?3) " +
             "   AND (?4 IS NULL OR r.status_id = ?4)", nativeQuery = true)
     Page<Recognition> getAllMyCreate(Integer userId, String keyword, Integer departmentId, Integer statusId, Pageable pageable);
+
+    @Query(value = "SELECT IFNULL(SUM(IFNULL(r.amount, 0)), 0) AS total_sum " +
+            "FROM recognitions r " +
+            "WHERE " +
+            "   r.type = 1 AND r.status_id = 7 " +
+            "   AND r.employee_id = ?1 AND YEAR(r.date) = ?2 AND MONTH(r.date) = ?3", nativeQuery = true)
+    long getSumBonus(Integer employeeId, Integer year, Integer month);
+
+    @Query(value = "SELECT IFNULL(SUM(IFNULL(r.amount, 0)), 0) AS total_sum " +
+            "FROM recognitions r " +
+            "WHERE " +
+            "   r.type = 0 AND r.status_id = 7 " +
+            "   AND r.employee_id = ?1 AND YEAR(r.date) = ?2 AND MONTH(r.date) = ?3", nativeQuery = true)
+    long getSumDeduction(Integer employeeId, Integer year, Integer month);
+
 }

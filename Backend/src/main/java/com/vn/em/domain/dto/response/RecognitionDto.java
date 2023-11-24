@@ -14,11 +14,11 @@ import java.time.LocalDate;
 @Setter
 public class RecognitionDto extends UserDateAuditingDto {
     private Integer id;
-    private LocalDate date;
     private Boolean type;
     private String reason;
     private String description;
     private Long amount;
+    private LocalDate date;
     private String rejectionReason;
     private Integer employeeId;
     private Integer statusId;

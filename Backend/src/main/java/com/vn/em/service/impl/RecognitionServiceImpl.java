@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -104,6 +105,7 @@ public class RecognitionServiceImpl implements RecognitionService {
         Status status = statusRepository.findById(recognitionUpdateDto.getStatusId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{recognitionUpdateDto.getStatusId().toString()}));
         recognitionMapper.update(recognition, recognitionUpdateDto);
+        recognition.setDate(LocalDate.now());
         recognition.setStatus(status);
         recognitionRepository.save(recognition);
         return recognitionMapper.mapRecognitionToRecognitionDto(recognition);
