@@ -78,4 +78,28 @@ public enum SortByDataConstant implements SortByInterface {
         }
     },
 
+    SALARY {
+        @Override
+        public String getSortBy(String sortBy) {
+            switch (sortBy) {
+                case "realSalary":
+                    return "real_salary";
+                case "bonus":
+                    return "bonus";
+                case "deduction":
+                    return "deduction";
+                case "netSalary":
+                    return "net_salary";
+                case "paymentStatus":
+                    return "payment_status";
+                case "paymentDate":
+                    return "payment_date";
+                case "lastModifiedDate":
+                    return "last_modified_date";
+                default:
+                    return "created_date";
+            }
+        }
+    },
+
 }

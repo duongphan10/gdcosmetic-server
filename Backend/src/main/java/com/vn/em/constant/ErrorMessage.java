@@ -79,6 +79,15 @@ public class ErrorMessage {
         public static final String ERR_NOT_FOUND_ID = "exception.attendance.not.found.id";
         public static final String ERR_ALREADY_EXIST = "exception.attendance.already.exist";
         public static final String INVALID_YEAR_MONTH = "exception.attendance.invalid.year.month";
+        public static final String ERR_NOT_FOUND = "exception.not.found.attendance";
+    }
+
+    public static class Salary {
+        public static final String ERR_NOT_FOUND_ID = "exception.salary.not.found.id";
+        public static final String ERR_ALREADY_EXIST = "exception.salary.already.exist";
+        public static final String INVALID_YEAR_MONTH = "exception.salary.invalid.year.month";
+        public static final String ERR_NOT_FOUND = "exception.not.found.salary";
+        public static final String ERR_SALARY_HAS_BEEN_PAID = "exception.salary.has.been.paid";
     }
 
 }

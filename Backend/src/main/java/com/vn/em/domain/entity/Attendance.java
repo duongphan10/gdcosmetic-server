@@ -33,4 +33,7 @@ public class Attendance extends UserDateAuditing {
     @JoinColumn(name = "employee_id", foreignKey = @ForeignKey(name = "FK_ATTENDANCE_EMPLOYEE"))
     private Employee employee;
 
+    @OneToOne(mappedBy = "attendance")
+    private Salary salary;
+
 }

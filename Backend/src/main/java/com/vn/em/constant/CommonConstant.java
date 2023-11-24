@@ -34,4 +34,9 @@ public class CommonConstant {
     public static final Long MAX_VIDEO_SIZE_MB = 20L;
     public static final Long MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
     public static final Long MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
+    public static final Long ALLOWANCE = 1000000L;
+    public static final Float INSURANCE = 0.105F;
+    public static final Long PERSONAL_DEDUCTION = 11000000L;
+    public static final Long DEPENDENT_PERSON = 4400000L;
+
 }
