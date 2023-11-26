@@ -90,4 +90,8 @@ public class ErrorMessage {
         public static final String ERR_SALARY_HAS_BEEN_PAID = "exception.salary.has.been.paid";
     }
 
+    public static class Project {
+        public static final String ERR_NOT_FOUND_ID = "exception.project.not.found.id";
+    }
+
 }

@@ -71,4 +71,7 @@ public class Employee extends UserDateAuditing {
     @OneToMany(mappedBy = "employee", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Attendance> attendances;
 
+    @OneToMany(mappedBy = "projectManager", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Project> projects;
+
 }
