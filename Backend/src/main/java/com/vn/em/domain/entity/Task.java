@@ -5,7 +5,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,8 +12,8 @@ import java.util.List;
 @Setter
 @Builder
 @Entity
-@Table(name = "projects")
-public class Project extends UserDateAuditing {
+@Table(name = "tasks")
+public class Task extends UserDateAuditing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -22,12 +21,8 @@ public class Project extends UserDateAuditing {
     private String name;
     @Column(nullable = false)
     private String description;
-    @Column(nullable = false)
-    private String purpose;
-    @Column(nullable = false)
-    private String requirement;
     @Column(nullable = true)
-    private String stakeholder;
+    private String requirement;
     @Column(nullable = true)
     private Long budget;
     @Column(nullable = false)
@@ -35,21 +30,22 @@ public class Project extends UserDateAuditing {
     @Column(nullable = false)
     private LocalDate dueDate;
     @Column(nullable = true)
-    private LocalDate timelineStart;
+    private LocalDate actualStartDate;
     @Column(nullable = true)
-    private LocalDate timelineEnd;
+    private LocalDate actualEndDate;
     @Column(nullable = true)
     private String note;
 
     @ManyToOne
-    @JoinColumn(name = "project_manager_id", foreignKey = @ForeignKey(name = "FK_PROJECT_EMPLOYEE"))
-    private Employee projectManager;
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TASK_PROJECT"))
+    private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "status_id", foreignKey = @ForeignKey(name = "FK_PROJECT_STATUS"))
-    private Status status;
+    @JoinColumn(name = "employee_id", foreignKey = @ForeignKey(name = "FK_TASK_EMPLOYEE"))
+    private Employee employee;
 
-    @OneToMany(mappedBy = "project", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private List<Task> tasks;
+    @ManyToOne
+    @JoinColumn(name = "status_id", foreignKey = @ForeignKey(name = "FK_TASK_STATUS"))
+    private Status status;
 
 }

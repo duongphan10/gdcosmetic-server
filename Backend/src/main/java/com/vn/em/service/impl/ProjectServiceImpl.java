@@ -14,6 +14,7 @@ import com.vn.em.domain.dto.response.ProjectDto;
 import com.vn.em.domain.entity.Employee;
 import com.vn.em.domain.entity.Project;
 import com.vn.em.domain.entity.Status;
+import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.ProjectMapper;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.EmployeeRepository;
@@ -64,7 +65,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public PaginationResponseDto<ProjectDto> getAllByUserId(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
-        userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
         if (statusId != null) {
             statusRepository.findById(statusId)
@@ -73,7 +74,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.PROJECT);
         Page<Project> projectPage = projectRepository.
-                getAllByUserId(paginationFullRequestDto.getKeyword(), userId, statusId, pageable);
+                getAllByEmployeeId(user.getEmployee().getId(), paginationFullRequestDto.getKeyword(), statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.PROJECT, projectPage);
         List<ProjectDto> projectDtos = projectMapper.mapProjectsToProjectDtos(projectPage.getContent());
@@ -86,7 +87,7 @@ public class ProjectServiceImpl implements ProjectService {
         Employee employee = null;
         if (projectCreateDto.getProjectManagerId() != null) {
             employee = employeeRepository.findById(projectCreateDto.getProjectManagerId())
-                    .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{projectCreateDto.getProjectManagerId().toString()}));
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND_ID, new String[]{projectCreateDto.getProjectManagerId().toString()}));
         }
 
         Project project = projectMapper.mapProjectCreateDtoToProject(projectCreateDto);
@@ -102,7 +103,7 @@ public class ProjectServiceImpl implements ProjectService {
         Employee employee = null;
         if (projectUpdateDto.getProjectManagerId() != null) {
             employee = employeeRepository.findById(projectUpdateDto.getProjectManagerId())
-                    .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{projectUpdateDto.getProjectManagerId().toString()}));
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND_ID, new String[]{projectUpdateDto.getProjectManagerId().toString()}));
         }
         Status status = statusRepository.findById(projectUpdateDto.getStatusId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{projectUpdateDto.getStatusId().toString()}));

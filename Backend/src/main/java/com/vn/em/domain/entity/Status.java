@@ -33,4 +33,7 @@ public class Status {
     @OneToMany(mappedBy = "status", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Project> projects;
 
+    @OneToMany(mappedBy = "status", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Task> tasks;
+
 }

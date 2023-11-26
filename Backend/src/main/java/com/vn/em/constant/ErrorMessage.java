@@ -94,4 +94,8 @@ public class ErrorMessage {
         public static final String ERR_NOT_FOUND_ID = "exception.project.not.found.id";
     }
 
+    public static class Task {
+        public static final String ERR_NOT_FOUND_ID = "exception.task.not.found.id";
+    }
+
 }

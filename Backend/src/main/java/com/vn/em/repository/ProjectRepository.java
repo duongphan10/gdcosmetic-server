@@ -17,11 +17,10 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
     Page<Project> getAll(String keyword, Integer statusId, Pageable pageable);
 
     @Query(value = "SELECT p.* FROM projects p " +
-            "INNER JOIN users u ON p.project_manager_id = u.employee_id " +
             "WHERE " +
-            "   (?1 = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', ?1, '%'))) " +
-            "   AND u.id = ?2 " +
+            "   p.project_manager_id = ?1 " +
+            "   AND (?2 = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', ?2, '%'))) " +
             "   AND (?3 IS NULL OR p.status_id = ?3) ", nativeQuery = true)
-    Page<Project> getAllByUserId(String keyword, Integer userId, Integer statusId, Pageable pageable);
+    Page<Project> getAllByEmployeeId(Integer employeeId, String keyword, Integer statusId, Pageable pageable);
 
 }
