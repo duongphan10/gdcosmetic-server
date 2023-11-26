@@ -20,6 +20,7 @@ public class ProjectDto extends UserDateAuditingDto {
     private String requirement;
     private String stakeholder;
     private Long budget;
+    private LocalDate startDate;
     private LocalDate dueDate;
     private LocalDate timelineStart;
     private LocalDate timelineEnd;

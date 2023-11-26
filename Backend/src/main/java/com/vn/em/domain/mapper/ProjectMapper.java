@@ -13,6 +13,7 @@ import java.util.List;
 public interface ProjectMapper {
 
     @Mappings({
+            @Mapping(target = "startDate", source = "startDate", dateFormat = CommonConstant.PATTERN_DATE),
             @Mapping(target = "dueDate", source = "dueDate", dateFormat = CommonConstant.PATTERN_DATE),
             @Mapping(target = "timelineStart", source = "timelineStart", dateFormat = CommonConstant.PATTERN_DATE),
     })
@@ -29,6 +30,7 @@ public interface ProjectMapper {
     List<ProjectDto> mapProjectsToProjectDtos(List<Project> projects);
 
     @Mappings({
+            @Mapping(target = "startDate", source = "startDate", dateFormat = CommonConstant.PATTERN_DATE),
             @Mapping(target = "dueDate", source = "dueDate", dateFormat = CommonConstant.PATTERN_DATE),
             @Mapping(target = "timelineStart", source = "timelineStart", dateFormat = CommonConstant.PATTERN_DATE),
             @Mapping(target = "timelineEnd", source = "timelineEnd", dateFormat = CommonConstant.PATTERN_DATE),

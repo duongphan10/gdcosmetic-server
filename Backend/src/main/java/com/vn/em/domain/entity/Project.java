@@ -30,6 +30,8 @@ public class Project extends UserDateAuditing {
     @Column(nullable = true)
     private Long budget;
     @Column(nullable = false)
+    private LocalDate startDate;
+    @Column(nullable = false)
     private LocalDate dueDate;
     @Column(nullable = true)
     private LocalDate timelineStart;

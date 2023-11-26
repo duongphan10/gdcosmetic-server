@@ -27,6 +27,9 @@ public class ProjectUpdateDto {
     private Long budget;
     @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
     @ValidDate
+    private String startDate;
+    @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
+    @ValidDate
     private String dueDate;
     @ValidDate
     private String timelineStart;
