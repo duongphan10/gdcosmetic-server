@@ -28,6 +28,7 @@ public class ErrorMessage {
     public static final String INVALID_YEAR = "invalid.year";
     public static final String INVALID_STATUS_UPDATE_SALARY_ADJUSTMENT = "invalid.status.update.salary.adjustment";
     public static final String INVALID_STATUS_UPDATE_RECOGNITION = "invalid.status.update.recognition";
+    public static final String INVALID_USER_LIST_SIZE = "invalid.user.list.size";
 
     public static class Auth {
         public static final String ERR_INCORRECT_USERNAME = "exception.auth.incorrect.username";
@@ -96,6 +97,16 @@ public class ErrorMessage {
 
     public static class Task {
         public static final String ERR_NOT_FOUND_ID = "exception.task.not.found.id";
+    }
+
+    public static class Room {
+        public static final String ERR_NOT_FOUND_ID = "exception.room.not.found.id";
+        public static final String ERR_INVALID_USER_LIST = "exception.invalid.user.list";
+    }
+
+    public static class UserRoom {
+        public static final String ERR_NOT_FOUND = "exception.user.room.not.found";
+        public static final String ERR_ALREADY_EXIST = "exception.user.room.already.exist";
     }
 
 }

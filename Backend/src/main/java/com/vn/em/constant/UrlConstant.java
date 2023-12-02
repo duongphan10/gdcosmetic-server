@@ -142,4 +142,21 @@ public class UrlConstant {
         }
     }
 
+    public static class Room {
+        public static final String PRE_FIX = "/room";
+        public static final String GET_BY_ID = PRE_FIX + "/{id}";
+        public static final String GET_ALL_MY_CONVERSATION = PRE_FIX + "/conversation/all";
+        public static final String GET_ALL_USER = PRE_FIX + "/{id}/user/all";
+        public static final String SEARCH_OTHER_USER = PRE_FIX + "/{id}/user/other";
+        public static final String CREATE = PRE_FIX + "/create";
+        public static final String ADD_USER = PRE_FIX + "/user/add";
+        public static final String UPDATE = PRE_FIX + "/{id}";
+        public static final String CHANGE_NICKNAME = PRE_FIX + "/user/change";
+        public static final String DELETE = PRE_FIX + "/{id}";
+        public static final String LEAVE = PRE_FIX + "/user/leave";
+
+        private Room() {
+        }
+    }
+
 }

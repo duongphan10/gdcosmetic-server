@@ -5,6 +5,7 @@ import com.vn.em.domain.entity.common.DateAuditing;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,5 +41,8 @@ public class User extends DateAuditing {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     private Employee employee;
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<UserRoom> userRooms;
 
 }

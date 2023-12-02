@@ -16,6 +16,8 @@ public interface UserService {
 
     PaginationResponseDto<UserDto> getAll(Integer departmentId, Boolean enabled, PaginationFullRequestDto request);
 
+    PaginationResponseDto<UserDto> searchOtherUser(Integer roomId, PaginationFullRequestDto request);
+
     UserDto createUser(UserCreateDto userCreateDto);
 
     UserDto updateUserById(Integer id, UserUpdateDto userUpdateDto);

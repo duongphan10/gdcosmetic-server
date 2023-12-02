@@ -19,10 +19,7 @@ import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.UserMapper;
 import com.vn.em.exception.AlreadyExistException;
 import com.vn.em.exception.NotFoundException;
-import com.vn.em.repository.DepartmentRepository;
-import com.vn.em.repository.EmployeeRepository;
-import com.vn.em.repository.RoleRepository;
-import com.vn.em.repository.UserRepository;
+import com.vn.em.repository.*;
 import com.vn.em.service.UserService;
 import com.vn.em.util.FileUtil;
 import com.vn.em.util.PaginationUtil;
@@ -43,6 +40,7 @@ public class UserServiceImpl implements UserService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final RoleRepository roleRepository;
+    private final RoomRepository roomRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -76,6 +74,19 @@ public class UserServiceImpl implements UserService {
         Page<User> userPage = userRepository.getAll(paginationFullRequestDto.getKeyword(), departmentId, enabled, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.USER, userPage);
+        List<UserDto> userDtos = userMapper.mapUsersToUserDtos(userPage.getContent());
+
+        return new PaginationResponseDto<>(meta, userDtos);
+    }
+
+    @Override
+    public PaginationResponseDto<UserDto> searchOtherUser(Integer roomId, PaginationFullRequestDto paginationFullRequestDto) {
+        roomRepository.findById(roomId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.Room.ERR_NOT_FOUND_ID, new String[]{roomId.toString()}));
+
+        Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto);
+        Page<User> userPage = userRepository.searchOtherUser(paginationFullRequestDto.getKeyword(), roomId, pageable);
+        PagingMeta meta = PaginationUtil.buildPagingMeta(paginationFullRequestDto, userPage);
         List<UserDto> userDtos = userMapper.mapUsersToUserDtos(userPage.getContent());
 
         return new PaginationResponseDto<>(meta, userDtos);

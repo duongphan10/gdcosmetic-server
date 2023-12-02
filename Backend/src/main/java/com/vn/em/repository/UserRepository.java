@@ -39,6 +39,25 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "   AND (?3 IS NULL OR u.enabled = ?3)", nativeQuery = true)
     Page<User> getAll(String keyword, Integer departmentId, Boolean enabled, Pageable pageable);
 
+    @Query(value = "SELECT " +
+            "   u.* " +
+            "FROM " +
+            "   users u " +
+            "        INNER JOIN " +
+            "   employees e ON u.employee_id = e.id " +
+            "WHERE " +
+            "   u.id NOT IN (SELECT " +
+            "            u.id " +
+            "        FROM " +
+            "            users u " +
+            "                INNER JOIN " +
+            "            user_rooms ur ON u.id = ur.user_id " +
+            "        WHERE " +
+            "            ur.room_id = ?2) " +
+            "   AND u.enabled = 1 " +
+            "   AND (?1 = '' OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', ?1, '%'))) ", nativeQuery = true)
+    Page<User> searchOtherUser(String keyword, Integer roomId, Pageable pageable);
+
     @Modifying
     @Query(value = "UPDATE users u " +
             "SET u.enabled = 0 " +
