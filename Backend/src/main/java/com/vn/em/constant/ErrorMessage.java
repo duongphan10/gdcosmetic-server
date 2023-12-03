@@ -29,6 +29,7 @@ public class ErrorMessage {
     public static final String INVALID_STATUS_UPDATE_SALARY_ADJUSTMENT = "invalid.status.update.salary.adjustment";
     public static final String INVALID_STATUS_UPDATE_RECOGNITION = "invalid.status.update.recognition";
     public static final String INVALID_USER_LIST_SIZE = "invalid.user.list.size";
+    public static final String INVALID_MESSAGE = "invalid.message";
 
     public static class Auth {
         public static final String ERR_INCORRECT_USERNAME = "exception.auth.incorrect.username";

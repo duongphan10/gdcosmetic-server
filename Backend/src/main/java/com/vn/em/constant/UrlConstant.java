@@ -159,4 +159,13 @@ public class UrlConstant {
         }
     }
 
+    public static class Message {
+        public static final String PRE_FIX = "/message";
+        public static final String GET_ALL_BY_ROOM_ID = PRE_FIX + "/all/{roomId}";
+        public static final String SEND = PRE_FIX + "/send";
+
+        private Message() {
+        }
+    }
+
 }

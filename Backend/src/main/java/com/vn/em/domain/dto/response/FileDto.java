@@ -6,16 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class MessageDto extends UserDateAuditingDto {
+public class FileDto extends UserDateAuditingDto {
     private Integer id;
-    private Integer roomId;
-    private String message;
-    private List<FileDto> fileDtos;
+    private String path;
+    private String name;
+    private Long size;
 
 }
