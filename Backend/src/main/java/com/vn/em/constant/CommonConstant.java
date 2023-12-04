@@ -39,4 +39,20 @@ public class CommonConstant {
     public static final Long PERSONAL_DEDUCTION = 11000000L;
     public static final Long DEPENDENT_PERSON = 4400000L;
 
+    public static class Key {
+        public static final String USER_ID = "userId";
+        public static final String ACCESS_TOKEN = "accessToken";
+    }
+
+    public static class Event {
+        //Client
+        public static final String CLIENT_SEND_MESSAGE = "client_send_message";
+        public static final String CLIENT_JOIN_ROOM = "client_join_room";
+
+        //Server
+        public static final String SERVER_SEND_ERROR = "server_send_error";
+        public static final String SERVER_SEND_MESSAGE = "server_send_message";
+        public static final String SERVER_SEND_NOTIFICATION = "server_send_notification";
+    }
+
 }
