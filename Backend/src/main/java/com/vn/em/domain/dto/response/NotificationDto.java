@@ -17,7 +17,5 @@ public class NotificationDto {
     private Boolean seen;
     private String createdDate;
     private String lastModifiedDate;
-    private Integer createdBy;
-    private Integer lastModifiedBy;
 
 }

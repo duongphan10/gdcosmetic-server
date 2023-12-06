@@ -1,6 +1,6 @@
 package com.vn.em.domain.entity;
 
-import com.vn.em.domain.entity.common.UserDateAuditing;
+import com.vn.em.domain.entity.common.DateAuditing;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Builder
 @Entity
 @Table(name = "notifications")
-public class Notification extends UserDateAuditing {
+public class Notification extends DateAuditing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
