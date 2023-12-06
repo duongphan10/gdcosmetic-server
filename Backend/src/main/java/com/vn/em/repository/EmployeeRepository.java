@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Transactional
@@ -33,5 +35,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
             "SET e.salary = ?2 " +
             "WHERE e.id = ?1", nativeQuery = true)
     void updateNewSalary(Integer id, Long newSalary);
+
+    @Query(value = "SELECT * " +
+            "FROM employees " +
+            "WHERE DAY(birthday) = DAY(?1) " +
+            "      AND MONTH(birthday) = MONTH(?1) ", nativeQuery = true)
+    List<Employee> getAllByBirthday(LocalDate date);
 
 }

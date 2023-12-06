@@ -51,7 +51,9 @@ public class DataConstant {
         PRO_DELETE(10, "The project you managed has been deleted"),
         TAS_CREATE(11, "You have been assigned to a new task"),
         TAS_UPDATE(12, "The project manager has changed the status of your task"),
-        TAS_DELETE(13, "The project manager has deleted your task");
+        TAS_DELETE(13, "The project manager has deleted your task"),
+        BIRTH_MY(14, "Today is your birthday. Happy Birthday <3"),
+        BIRTH_YOU(15, "Today is %s's birthday. Please wish %s a happy birthday <3");
         private final int type;
         private final String message;
     }
