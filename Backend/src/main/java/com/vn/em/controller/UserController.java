@@ -4,10 +4,7 @@ import com.vn.em.base.RestApiV1;
 import com.vn.em.base.VsResponseUtil;
 import com.vn.em.constant.UrlConstant;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
-import com.vn.em.domain.dto.request.ChangeAvatarRequestDto;
-import com.vn.em.domain.dto.request.ChangePasswordRequestDto;
-import com.vn.em.domain.dto.request.UserCreateDto;
-import com.vn.em.domain.dto.request.UserUpdateDto;
+import com.vn.em.domain.dto.request.*;
 import com.vn.em.security.CurrentUser;
 import com.vn.em.security.UserPrincipal;
 import com.vn.em.service.UserService;
@@ -83,6 +80,15 @@ public class UserController {
                                             @CurrentUser UserPrincipal user,
                                             @Valid @RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
         return VsResponseUtil.success(userService.changePassword(user.getId(), changePasswordRequestDto));
+    }
+
+    @Tag(name = "user-controller")
+    @Operation(summary = "API create new password")
+    @PatchMapping(UrlConstant.User.CREATE_NEW_PASSWORD)
+    public ResponseEntity<?> createNewPassword(@Parameter(name = "principal", hidden = true)
+                                               @CurrentUser UserPrincipal user,
+                                               @Valid @RequestBody NewPasswordRequestDto newPasswordRequestDto) {
+        return VsResponseUtil.success(userService.createNewPassword(user.getId(), newPasswordRequestDto));
     }
 
     @Tag(name = "user-controller")

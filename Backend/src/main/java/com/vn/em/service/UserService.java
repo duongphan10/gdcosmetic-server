@@ -2,10 +2,7 @@ package com.vn.em.service;
 
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
 import com.vn.em.domain.dto.pagination.PaginationResponseDto;
-import com.vn.em.domain.dto.request.ChangeAvatarRequestDto;
-import com.vn.em.domain.dto.request.ChangePasswordRequestDto;
-import com.vn.em.domain.dto.request.UserCreateDto;
-import com.vn.em.domain.dto.request.UserUpdateDto;
+import com.vn.em.domain.dto.request.*;
 import com.vn.em.domain.dto.response.CommonResponseDto;
 import com.vn.em.domain.dto.response.UserDto;
 
@@ -25,6 +22,8 @@ public interface UserService {
     UserDto changeAvatar(Integer id, ChangeAvatarRequestDto changeAvatarRequestDto);
 
     CommonResponseDto changePassword(Integer id, ChangePasswordRequestDto changePasswordRequestDto);
+
+    CommonResponseDto createNewPassword(Integer id, NewPasswordRequestDto newPasswordRequestDto);
 
     CommonResponseDto deleteUserById(Integer id);
 

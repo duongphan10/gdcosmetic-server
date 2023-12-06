@@ -1,7 +1,9 @@
 package com.vn.em.service;
 
+import com.vn.em.domain.dto.request.ForgotPasswordRequestDto;
 import com.vn.em.domain.dto.request.LoginRequestDto;
 import com.vn.em.domain.dto.request.TokenRefreshRequestDto;
+import com.vn.em.domain.dto.request.VerifyRequestDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
 import com.vn.em.domain.dto.response.LoginResponseDto;
 import com.vn.em.domain.dto.response.TokenRefreshResponseDto;
@@ -17,5 +19,9 @@ public interface AuthService {
     TokenRefreshResponseDto refresh(TokenRefreshRequestDto request);
 
     CommonResponseDto logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication);
+
+    CommonResponseDto forgotPassword(ForgotPasswordRequestDto requestDto);
+
+    CommonResponseDto verifyForgotPassword(VerifyRequestDto verifyRequestDto);
 
 }

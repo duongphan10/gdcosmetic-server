@@ -1,7 +1,7 @@
 package com.vn.em.constant;
 
 public class CommonConstant {
-
+    public static final String APP_NAME = "GD Cosmetic";
     public static final String SORT_TYPE_ASC = "ASC";
     public static final String SORT_TYPE_DESC = "DESC";
     public static final Integer PAGE_SIZE_DEFAULT = 10;
@@ -38,6 +38,8 @@ public class CommonConstant {
     public static final Float INSURANCE = 0.105F;
     public static final Long PERSONAL_DEDUCTION = 11000000L;
     public static final Long DEPENDENT_PERSON = 4400000L;
+    public static final Integer VERIFICATION_C0DE_LENGTH = 6;
+    public static final Integer VERIFICATION_CODE_EXPIRATION_MINUTES = 10;
 
     public static class Key {
         public static final String USER_ID = "userId";

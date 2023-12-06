@@ -1,8 +1,10 @@
 package com.vn.em.util;
 
+import com.vn.em.constant.CommonConstant;
 import com.vn.em.domain.dto.common.DataMailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +35,7 @@ public class SendMailUtil {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
+        helper.setFrom(Objects.requireNonNull(((JavaMailSenderImpl) mailSender).getUsername()), CommonConstant.APP_NAME);
         helper.setTo(mail.getTo());
         helper.setSubject(mail.getSubject());
         Context context = new Context();

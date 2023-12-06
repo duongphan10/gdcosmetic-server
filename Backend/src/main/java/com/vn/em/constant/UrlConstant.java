@@ -4,9 +4,10 @@ public class UrlConstant {
 
     public static class Auth {
         private static final String PRE_FIX = "/auth";
-
         public static final String LOGIN = PRE_FIX + "/login";
         public static final String LOGOUT = PRE_FIX + "/logout";
+        public static final String SEND_VERIFY = PRE_FIX + "/send";
+        public static final String VERIFY = PRE_FIX + "/verify";
 
         private Auth() {
         }
@@ -21,6 +22,7 @@ public class UrlConstant {
         public static final String UPDATE = PRE_FIX + "/{id}";
         public static final String CHANGE_AVATAR = PRE_FIX + "/change/avatar";
         public static final String CHANGE_PASSWORD = PRE_FIX + "/change/password";
+        public static final String CREATE_NEW_PASSWORD = PRE_FIX + "/create/new-password";
         public static final String DELETE = PRE_FIX + "/{id}";
 
         private User() {

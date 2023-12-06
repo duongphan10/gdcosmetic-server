@@ -43,6 +43,7 @@ public class ErrorMessage {
     public static class User {
         public static final String ERR_NOT_FOUND_USERNAME = "exception.user.not.found.username";
         public static final String ERR_NOT_FOUND_ID = "exception.user.not.found.id";
+        public static final String ERR_NOT_FOUND_WITH_EMAIL = "exception.user.not.found.with.email";
         public static final String ERR_ALREADY_EXIST = "exception.user.already.exist";
     }
 

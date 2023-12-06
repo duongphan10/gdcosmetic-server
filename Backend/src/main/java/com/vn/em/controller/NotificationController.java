@@ -4,8 +4,6 @@ import com.vn.em.base.RestApiV1;
 import com.vn.em.base.VsResponseUtil;
 import com.vn.em.constant.UrlConstant;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
-import com.vn.em.repository.RoleRepository;
-import com.vn.em.repository.UserRepository;
 import com.vn.em.security.CurrentUser;
 import com.vn.em.security.UserPrincipal;
 import com.vn.em.service.NotificationService;

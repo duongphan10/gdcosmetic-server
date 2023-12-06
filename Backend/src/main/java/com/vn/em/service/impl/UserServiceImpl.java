@@ -7,10 +7,7 @@ import com.vn.em.constant.SortByDataConstant;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
 import com.vn.em.domain.dto.pagination.PaginationResponseDto;
 import com.vn.em.domain.dto.pagination.PagingMeta;
-import com.vn.em.domain.dto.request.ChangeAvatarRequestDto;
-import com.vn.em.domain.dto.request.ChangePasswordRequestDto;
-import com.vn.em.domain.dto.request.UserCreateDto;
-import com.vn.em.domain.dto.request.UserUpdateDto;
+import com.vn.em.domain.dto.request.*;
 import com.vn.em.domain.dto.response.CommonResponseDto;
 import com.vn.em.domain.dto.response.UserDto;
 import com.vn.em.domain.entity.Employee;
@@ -156,6 +153,15 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return new CommonResponseDto(true, MessageConstant.CHANGE_PASSWORD_SUCCESSFULLY);
+    }
+
+    @Override
+    public CommonResponseDto createNewPassword(Integer id, NewPasswordRequestDto newPasswordRequestDto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
+        user.setPassword(passwordEncoder.encode(newPasswordRequestDto.getPassword()));
+        userRepository.save(user);
+        return new CommonResponseDto(true, MessageConstant.CREATE_NEW_PASSWORD_SUCCESSFULLY);
     }
 
     @Override
