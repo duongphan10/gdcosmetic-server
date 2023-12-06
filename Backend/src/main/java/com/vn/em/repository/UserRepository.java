@@ -1,6 +1,7 @@
 package com.vn.em.repository;
 
 import com.vn.em.domain.entity.Employee;
+import com.vn.em.domain.entity.Role;
 import com.vn.em.domain.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional
@@ -25,6 +27,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u WHERE u.username = ?1")
     Optional<User> findByUsername(String username);
+
+    List<User> getAllByRole(Role role);
 
     @Query(value = "SELECT u.* FROM users u " +
             "INNER JOIN employees e ON u.employee_id = e.id " +

@@ -1,5 +1,6 @@
 package com.vn.em.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vn.em.domain.entity.common.DateAuditing;
 import lombok.*;
@@ -36,6 +37,7 @@ public class User extends DateAuditing {
     //Link to table Role
     @ManyToOne
     @JoinColumn(name = "role_id", foreignKey = @ForeignKey(name = "FK_USER_ROLE"))
+    @JsonBackReference
     private Role role;
 
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -44,5 +46,8 @@ public class User extends DateAuditing {
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<UserRoom> userRooms;
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<Notification> notifications;
 
 }

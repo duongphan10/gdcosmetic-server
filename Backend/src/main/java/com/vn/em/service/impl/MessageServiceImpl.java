@@ -1,5 +1,6 @@
 package com.vn.em.service.impl;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import com.vn.em.constant.CommonConstant;
 import com.vn.em.constant.ErrorMessage;
 import com.vn.em.constant.SortByDataConstant;
@@ -11,11 +12,13 @@ import com.vn.em.domain.dto.response.MessageDto;
 import com.vn.em.domain.entity.File;
 import com.vn.em.domain.entity.Message;
 import com.vn.em.domain.entity.Room;
+import com.vn.em.domain.entity.UserRoom;
 import com.vn.em.domain.mapper.MessageMapper;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.FileRepository;
 import com.vn.em.repository.MessageRepository;
 import com.vn.em.repository.RoomRepository;
+import com.vn.em.repository.UserRoomRepository;
 import com.vn.em.service.MessageService;
 import com.vn.em.util.FileUtil;
 import com.vn.em.util.PaginationUtil;
@@ -36,7 +39,9 @@ public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final FileRepository fileRepository;
     private final RoomRepository roomRepository;
+    private final UserRoomRepository userRoomRepository;
     private final MessageMapper messageMapper;
+    private final SocketIOServer server;
 
     @Override
     public PaginationResponseDto<MessageDto> getAllByRoomId(Integer roomId, PaginationFullRequestDto paginationFullRequestDto) {
@@ -75,7 +80,14 @@ public class MessageServiceImpl implements MessageService {
             }
             message.setFiles(files);
         }
-        return messageMapper.mapMessageToMessageDto(messageRepository.save(message));
+        MessageDto messageDto = messageMapper.mapMessageToMessageDto(messageRepository.save(message));
+
+        List<UserRoom> userRooms = userRoomRepository.getAllUserByRoomId(room.getId());
+        for (UserRoom userRoom : userRooms) {
+            server.getRoomOperations(userRoom.getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_MESSAGE, messageDto);
+        }
+        return messageDto;
     }
 
 }

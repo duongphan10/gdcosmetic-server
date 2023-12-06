@@ -160,4 +160,14 @@ public enum SortByDataConstant implements SortByInterface {
         }
     },
 
+    NOTIFICATION {
+        @Override
+        public String getSortBy(String sortBy) {
+            if (sortBy.equals("lastModifiedDate")) {
+                return "last_modified_date";
+            }
+            return "created_date";
+        }
+    },
+
 }

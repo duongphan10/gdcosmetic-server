@@ -168,4 +168,14 @@ public class UrlConstant {
         }
     }
 
+    public static class Notification {
+        public static final String PRE_FIX = "/notification";
+        public static final String GET_ALL = PRE_FIX + "/all";
+        public static final String GET_UNREAD = PRE_FIX + "/unread";
+        public static final String SEEN_ALL = PRE_FIX + "/seen";
+
+        private Notification() {
+        }
+    }
+
 }

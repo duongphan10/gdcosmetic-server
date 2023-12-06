@@ -1,21 +1,21 @@
 package com.vn.em.service.impl;
 
-import com.vn.em.constant.DataConstant;
-import com.vn.em.constant.ErrorMessage;
-import com.vn.em.constant.MessageConstant;
-import com.vn.em.constant.SortByDataConstant;
+import com.corundumstudio.socketio.SocketIOServer;
+import com.vn.em.constant.*;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
 import com.vn.em.domain.dto.pagination.PaginationResponseDto;
 import com.vn.em.domain.dto.pagination.PagingMeta;
 import com.vn.em.domain.dto.request.TaskCreateDto;
 import com.vn.em.domain.dto.request.TaskUpdateDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
+import com.vn.em.domain.dto.response.NotificationDto;
 import com.vn.em.domain.dto.response.TaskDto;
 import com.vn.em.domain.entity.*;
 import com.vn.em.domain.mapper.TaskMapper;
 import com.vn.em.exception.ForbiddenException;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.*;
+import com.vn.em.service.NotificationService;
 import com.vn.em.service.TaskService;
 import com.vn.em.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,8 @@ public class TaskServiceImpl implements TaskService {
     private final UserRepository userRepository;
     private final StatusRepository statusRepository;
     private final TaskMapper taskMapper;
+    private final NotificationService notificationService;
+    private final SocketIOServer server;
 
     @Override
     public TaskDto getById(Integer id) {
@@ -97,7 +100,16 @@ public class TaskServiceImpl implements TaskService {
         task.setProject(project);
         task.setEmployee(employee);
         task.setStatus(statusRepository.getById(DataConstant.Status.NEW.getId()));
-        return taskMapper.mapTaskToTaskDto(taskRepository.save(task));
+        taskRepository.save(task);
+
+        if (employee != null) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_CREATE.getType(),
+                    DataConstant.Notification.TAS_CREATE.getMessage(), employee.getUser().getId());
+            server.getRoomOperations(employee.getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+
+        return taskMapper.mapTaskToTaskDto(task);
     }
 
     @Override
@@ -114,11 +126,26 @@ public class TaskServiceImpl implements TaskService {
         }
         Status status = statusRepository.findById(taskUpdateDto.getStatusId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{taskUpdateDto.getStatusId().toString()}));
-
+        boolean checkStatus = Objects.equals(task.getStatus().getId(), taskUpdateDto.getStatusId());
         taskMapper.update(task, taskUpdateDto);
         task.setEmployee(employee);
         task.setStatus(status);
-        return taskMapper.mapTaskToTaskDto(taskRepository.save(task));
+        taskRepository.save(task);
+
+        if (employee != null) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_CREATE.getType(),
+                    DataConstant.Notification.TAS_CREATE.getMessage(), employee.getUser().getId());
+            server.getRoomOperations(employee.getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+        if (!checkStatus && task.getEmployee() != null) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_UPDATE.getType(),
+                    DataConstant.Notification.TAS_UPDATE.getMessage(), task.getEmployee().getUser().getId());
+            server.getRoomOperations(task.getEmployee().getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+
+        return taskMapper.mapTaskToTaskDto(task);
     }
 
     @Override
@@ -129,6 +156,14 @@ public class TaskServiceImpl implements TaskService {
             throw new ForbiddenException(ErrorMessage.FORBIDDEN_UPDATE_DELETE);
         }
         taskRepository.delete(task);
+
+        if (task.getEmployee() != null) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_DELETE.getType(),
+                    DataConstant.Notification.TAS_DELETE.getMessage(), task.getEmployee().getUser().getId());
+            server.getRoomOperations(task.getEmployee().getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+
         return new CommonResponseDto(true, MessageConstant.DELETE_TASK_SUCCESSFULLY);
     }
 

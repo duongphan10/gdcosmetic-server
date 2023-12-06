@@ -9,11 +9,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class FileDto {
+public class NotificationDto {
     private Integer id;
-    private String path;
-    private String name;
-    private Long size;
+    private Integer userId;
+    private Integer type;
+    private String message;
+    private Boolean seen;
     private String createdDate;
     private String lastModifiedDate;
     private Integer createdBy;

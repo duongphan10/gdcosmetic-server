@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UserRoomRepository extends JpaRepository<UserRoom, UserRoomKey> {
 
@@ -16,6 +18,12 @@ public interface UserRoomRepository extends JpaRepository<UserRoom, UserRoomKey>
             "WHERE " +
             "   ur.room_id = ?1", nativeQuery = true)
     Page<UserRoom> getAllUserByRoomId(Integer roomId, Pageable pageable);
+
+    @Query(value = "SELECT ur.* " +
+            "FROM user_rooms ur " +
+            "WHERE " +
+            "   ur.room_id = ?1", nativeQuery = true)
+    List<UserRoom> getAllUserByRoomId(Integer roomId);
 
     boolean existsById(UserRoomKey userRoomKey);
 }

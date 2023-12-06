@@ -1,22 +1,23 @@
 package com.vn.em.service.impl;
 
-import com.vn.em.constant.DataConstant;
-import com.vn.em.constant.ErrorMessage;
-import com.vn.em.constant.MessageConstant;
-import com.vn.em.constant.SortByDataConstant;
+import com.corundumstudio.socketio.SocketIOServer;
+import com.vn.em.constant.*;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
 import com.vn.em.domain.dto.pagination.PaginationResponseDto;
 import com.vn.em.domain.dto.pagination.PagingMeta;
 import com.vn.em.domain.dto.request.SalaryAdjustmentCreateDto;
 import com.vn.em.domain.dto.request.SalaryAdjustmentUpdateDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
+import com.vn.em.domain.dto.response.NotificationDto;
 import com.vn.em.domain.dto.response.SalaryAdjustmentDto;
 import com.vn.em.domain.entity.Employee;
 import com.vn.em.domain.entity.SalaryAdjustment;
 import com.vn.em.domain.entity.Status;
+import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.SalaryAdjustmentMapper;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.*;
+import com.vn.em.service.NotificationService;
 import com.vn.em.service.SalaryAdjustmentService;
 import com.vn.em.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,10 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
     private final DepartmentRepository departmentRepository;
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final NotificationService notificationService;
     private final SalaryAdjustmentMapper salaryAdjustmentMapper;
+    private final SocketIOServer server;
 
     @Override
     public SalaryAdjustmentDto getById(Integer id) {
@@ -95,6 +99,16 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
         salaryAdjustment.setEmployee(employee);
         salaryAdjustment.setStatus(statusRepository.getById(DataConstant.Status.PENDING.getId()));
         salaryAdjustmentRepository.save(salaryAdjustment);
+
+
+        List<User> users = userRepository.getAllByRole(roleRepository.findByRoleName(DataConstant.Role.LEADER.getName()));
+        for (User user : users) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.SAL_CREATE.getType(),
+                    DataConstant.Notification.SAL_CREATE.getMessage(), user);
+            server.getRoomOperations(user.getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+
         return salaryAdjustmentMapper.mapSalaryAdjustmentToSalaryAdjustmentDto(salaryAdjustment);
     }
 
@@ -107,9 +121,26 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
         salaryAdjustmentMapper.update(salaryAdjustment, salaryAdjustmentUpdateDto);
         salaryAdjustment.setStatus(status);
         salaryAdjustmentRepository.save(salaryAdjustment);
+
+        NotificationDto notificationDto;
         if (status.getId() == DataConstant.Status.APPROVED.getId()) {
             employeeRepository.updateNewSalary(salaryAdjustment.getEmployee().getId(), salaryAdjustment.getNewSalary());
+
+            notificationDto = notificationService.create(DataConstant.Notification.SAL_UPDATE.getType(),
+                    DataConstant.Notification.SAL_UPDATE.getMessage(), salaryAdjustment.getEmployee().getUser());
+            server.getRoomOperations(salaryAdjustment.getEmployee().getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+
+            notificationDto = notificationService.create(DataConstant.Notification.SAL_APPROVED.getType(),
+                    DataConstant.Notification.SAL_APPROVED.getMessage(), salaryAdjustment.getCreatedBy());
+        } else {
+            notificationDto = notificationService.create(DataConstant.Notification.SAL_REJECTED.getType(),
+                    DataConstant.Notification.SAL_REJECTED.getMessage(), salaryAdjustment.getCreatedBy());
+
         }
+        server.getRoomOperations(salaryAdjustment.getCreatedBy().toString())
+                .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+
         return salaryAdjustmentMapper.mapSalaryAdjustmentToSalaryAdjustmentDto(salaryAdjustment);
     }
 

@@ -1,6 +1,5 @@
 package com.vn.em.domain.dto.response;
 
-import com.vn.em.domain.dto.common.UserDateAuditingDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +11,14 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MessageDto extends UserDateAuditingDto {
+public class MessageDto {
     private Integer id;
     private Integer roomId;
     private String message;
+    private String createdDate;
+    private String lastModifiedDate;
+    private Integer createdBy;
+    private Integer lastModifiedBy;
     private List<FileDto> fileDtos;
 
 }

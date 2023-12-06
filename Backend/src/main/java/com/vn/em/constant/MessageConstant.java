@@ -23,5 +23,6 @@ public class MessageConstant {
     public static final String DELETE_TASK_SUCCESSFULLY = "You deleted the task successfully";
     public static final String DELETE_ROOM_SUCCESSFULLY = "You deleted the room successfully";
     public static final String DELETE_USER_ROOM_SUCCESSFULLY = "You deleted the user in room successfully";
+    public static final String SEEN_ALL_NOTIFICATION = "You have seen all notifications";
 
 }

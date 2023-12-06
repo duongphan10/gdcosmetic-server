@@ -1,6 +1,6 @@
 package com.vn.em;
 
-import com.vn.em.constant.RoleConstant;
+import com.vn.em.constant.DataConstant;
 import com.vn.em.domain.entity.Role;
 import com.vn.em.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +34,9 @@ public class EMApplication {
         return args -> {
             //init role
             if (roleRepository.count() == 0) {
-                roleRepository.save(new Role(null, RoleConstant.ADMIN, null, null));
-                roleRepository.save(new Role(null, RoleConstant.USER, null, null));
+                roleRepository.save(new Role(DataConstant.Role.LEADER.getId(), DataConstant.Role.LEADER.getName(), null, null));
+                roleRepository.save(new Role(DataConstant.Role.MANAGER.getId(), DataConstant.Role.MANAGER.getName(), null, null));
+                roleRepository.save(new Role(DataConstant.Role.EMPLOYEE.getId(), DataConstant.Role.EMPLOYEE.getName(), null, null));
             }
         };
     }

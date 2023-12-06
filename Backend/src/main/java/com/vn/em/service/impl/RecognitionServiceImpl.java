@@ -1,22 +1,23 @@
 package com.vn.em.service.impl;
 
-import com.vn.em.constant.DataConstant;
-import com.vn.em.constant.ErrorMessage;
-import com.vn.em.constant.MessageConstant;
-import com.vn.em.constant.SortByDataConstant;
+import com.corundumstudio.socketio.SocketIOServer;
+import com.vn.em.constant.*;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
 import com.vn.em.domain.dto.pagination.PaginationResponseDto;
 import com.vn.em.domain.dto.pagination.PagingMeta;
 import com.vn.em.domain.dto.request.RecognitionCreateDto;
 import com.vn.em.domain.dto.request.RecognitionUpdateDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
+import com.vn.em.domain.dto.response.NotificationDto;
 import com.vn.em.domain.dto.response.RecognitionDto;
 import com.vn.em.domain.entity.Employee;
 import com.vn.em.domain.entity.Recognition;
 import com.vn.em.domain.entity.Status;
+import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.RecognitionMapper;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.*;
+import com.vn.em.service.NotificationService;
 import com.vn.em.service.RecognitionService;
 import com.vn.em.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,10 @@ public class RecognitionServiceImpl implements RecognitionService {
     private final DepartmentRepository departmentRepository;
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final NotificationService notificationService;
     private final RecognitionMapper recognitionMapper;
+    private final SocketIOServer server;
 
     @Override
     public RecognitionDto getById(Integer id) {
@@ -95,6 +99,15 @@ public class RecognitionServiceImpl implements RecognitionService {
         recognition.setEmployee(employee);
         recognition.setStatus(statusRepository.getById(DataConstant.Status.PENDING.getId()));
         recognitionRepository.save(recognition);
+
+        List<User> users = userRepository.getAllByRole(roleRepository.findByRoleName(DataConstant.Role.LEADER.getName()));
+        for (User user : users) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.SAL_CREATE.getType(),
+                    DataConstant.Notification.REC_CREATE.getMessage(), user);
+            server.getRoomOperations(user.getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+
         return recognitionMapper.mapRecognitionToRecognitionDto(recognition);
     }
 
@@ -108,6 +121,18 @@ public class RecognitionServiceImpl implements RecognitionService {
         recognition.setDate(LocalDate.now());
         recognition.setStatus(status);
         recognitionRepository.save(recognition);
+
+        NotificationDto notificationDto;
+        if (status.getId() == DataConstant.Status.APPROVED.getId()) {
+            notificationDto = notificationService.create(DataConstant.Notification.REC_APPROVED.getType(),
+                    DataConstant.Notification.REC_APPROVED.getMessage(), recognition.getCreatedBy());
+        } else {
+            notificationDto = notificationService.create(DataConstant.Notification.REC_REJECTED.getType(),
+                    DataConstant.Notification.REC_REJECTED.getMessage(), recognition.getCreatedBy());
+        }
+        server.getRoomOperations(recognition.getCreatedBy().toString())
+                .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+
         return recognitionMapper.mapRecognitionToRecognitionDto(recognition);
     }
 

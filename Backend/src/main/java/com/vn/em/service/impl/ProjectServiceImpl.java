@@ -1,15 +1,14 @@
 package com.vn.em.service.impl;
 
-import com.vn.em.constant.DataConstant;
-import com.vn.em.constant.ErrorMessage;
-import com.vn.em.constant.MessageConstant;
-import com.vn.em.constant.SortByDataConstant;
+import com.corundumstudio.socketio.SocketIOServer;
+import com.vn.em.constant.*;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
 import com.vn.em.domain.dto.pagination.PaginationResponseDto;
 import com.vn.em.domain.dto.pagination.PagingMeta;
 import com.vn.em.domain.dto.request.ProjectCreateDto;
 import com.vn.em.domain.dto.request.ProjectUpdateDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
+import com.vn.em.domain.dto.response.NotificationDto;
 import com.vn.em.domain.dto.response.ProjectDto;
 import com.vn.em.domain.entity.Employee;
 import com.vn.em.domain.entity.Project;
@@ -21,6 +20,7 @@ import com.vn.em.repository.EmployeeRepository;
 import com.vn.em.repository.ProjectRepository;
 import com.vn.em.repository.StatusRepository;
 import com.vn.em.repository.UserRepository;
+import com.vn.em.service.NotificationService;
 import com.vn.em.service.ProjectService;
 import com.vn.em.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +40,8 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserRepository userRepository;
     private final StatusRepository statusRepository;
     private final ProjectMapper projectMapper;
+    private final NotificationService notificationService;
+    private final SocketIOServer server;
 
     @Override
     public ProjectDto getById(Integer id) {
@@ -93,7 +96,16 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectMapper.mapProjectCreateDtoToProject(projectCreateDto);
         project.setProjectManager(employee);
         project.setStatus(statusRepository.getById(DataConstant.Status.NEW.getId()));
-        return projectMapper.mapProjectToProjectDto(projectRepository.save(project));
+        projectRepository.save(project);
+
+        if (employee != null) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_CREATE.getType(),
+                    DataConstant.Notification.PRO_CREATE.getMessage(), employee.getUser().getId());
+            server.getRoomOperations(employee.getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+
+        return projectMapper.mapProjectToProjectDto(project);
     }
 
     @Override
@@ -107,11 +119,27 @@ public class ProjectServiceImpl implements ProjectService {
         }
         Status status = statusRepository.findById(projectUpdateDto.getStatusId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{projectUpdateDto.getStatusId().toString()}));
+        boolean checkStatus = Objects.equals(project.getStatus().getId(), projectUpdateDto.getStatusId());
 
         projectMapper.update(project, projectUpdateDto);
         project.setProjectManager(employee);
         project.setStatus(status);
-        return projectMapper.mapProjectToProjectDto(projectRepository.save(project));
+        projectRepository.save(project);
+
+        if (employee != null) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_CREATE.getType(),
+                    DataConstant.Notification.PRO_CREATE.getMessage(), employee.getUser().getId());
+            server.getRoomOperations(employee.getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+        if (!checkStatus && project.getProjectManager() != null) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_UPDATE.getType(),
+                    DataConstant.Notification.PRO_UPDATE.getMessage(), project.getProjectManager().getUser().getId());
+            server.getRoomOperations(project.getProjectManager().getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+
+        return projectMapper.mapProjectToProjectDto(project);
     }
 
     @Override
@@ -119,6 +147,14 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Project.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         projectRepository.delete(project);
+
+        if (project.getProjectManager() != null) {
+            NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_DELETE.getType(),
+                    DataConstant.Notification.PRO_DELETE.getMessage(), project.getProjectManager().getUser().getId());
+            server.getRoomOperations(project.getProjectManager().getUser().getId().toString())
+                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+        }
+
         return new CommonResponseDto(true, MessageConstant.DELETE_PROJECT_SUCCESSFULLY);
     }
 }
