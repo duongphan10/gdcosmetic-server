@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -48,6 +49,7 @@ public class EmployeeController {
     @Tag(name = "employee-controller")
     @Operation(summary = "API create employee")
     @PostMapping(UrlConstant.Employee.CREATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> createEmployee(@Valid @ModelAttribute EmployeeCreateDto employeeCreateDto) {
         return VsResponseUtil.success(employeeService.create(employeeCreateDto));
     }
@@ -55,6 +57,7 @@ public class EmployeeController {
     @Tag(name = "employee-controller")
     @Operation(summary = "API update employee")
     @PatchMapping(UrlConstant.Employee.UPDATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updateEmployeeById(@PathVariable Integer id,
                                                 @Valid @ModelAttribute EmployeeUpdateDto employeeUpdateDto) {
         return VsResponseUtil.success(employeeService.updateById(id, employeeUpdateDto));
@@ -63,6 +66,7 @@ public class EmployeeController {
     @Tag(name = "employee-controller")
     @Operation(summary = "API delete employee")
     @DeleteMapping(UrlConstant.Employee.DELETE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> deleteEmployeeById(@PathVariable Integer id) {
         return VsResponseUtil.success(employeeService.deleteById(id));
     }

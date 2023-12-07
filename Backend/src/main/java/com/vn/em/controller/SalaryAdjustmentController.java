@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,6 +36,7 @@ public class SalaryAdjustmentController {
     @Tag(name = "salary-adjustment-controller")
     @Operation(summary = "API get all salary adjustment")
     @GetMapping(UrlConstant.SalaryAdjustment.GET_ALL)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> getAllSalaryAdjustment(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                                     @RequestParam(name = "statusId", required = false) Integer statusId,
                                                     @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
@@ -44,6 +46,7 @@ public class SalaryAdjustmentController {
     @Tag(name = "salary-adjustment-controller")
     @Operation(summary = "API get all my salary adjustment create")
     @GetMapping(UrlConstant.SalaryAdjustment.GET_ALL_BY_USER_CREATE)
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
     public ResponseEntity<?> getAllMySalaryAdjustmentCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                                             @RequestParam(name = "statusId", required = false) Integer statusId,
                                                             @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto,
@@ -55,6 +58,7 @@ public class SalaryAdjustmentController {
     @Tag(name = "salary-adjustment-controller")
     @Operation(summary = "API create salary adjustment")
     @PostMapping(UrlConstant.SalaryAdjustment.CREATE)
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
     public ResponseEntity<?> createSalaryAdjustment(@Valid @RequestBody SalaryAdjustmentCreateDto salaryAdjustmentCreateDto) {
         return VsResponseUtil.success(salaryAdjustmentService.create(salaryAdjustmentCreateDto));
     }
@@ -62,6 +66,7 @@ public class SalaryAdjustmentController {
     @Tag(name = "salary-adjustment-controller")
     @Operation(summary = "API update salary adjustment by id")
     @PatchMapping(UrlConstant.SalaryAdjustment.UPDATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updateSalaryAdjustmentById(@PathVariable Integer id,
                                                         @Valid @RequestBody SalaryAdjustmentUpdateDto salaryAdjustmentUpdateDto) {
         return VsResponseUtil.success(salaryAdjustmentService.updateById(id, salaryAdjustmentUpdateDto));
@@ -70,6 +75,7 @@ public class SalaryAdjustmentController {
     @Tag(name = "salary-adjustment-controller")
     @Operation(summary = "API delete salary adjustment by id")
     @DeleteMapping(UrlConstant.SalaryAdjustment.DELETE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> deleteSalaryAdjustmentById(@PathVariable Integer id) {
         return VsResponseUtil.success(salaryAdjustmentService.deleteById(id));
     }

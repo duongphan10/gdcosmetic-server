@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -37,6 +38,7 @@ public class PositionController {
     @Tag(name = "position-controller")
     @Operation(summary = "API create position")
     @PostMapping(UrlConstant.Position.CREATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> createPosition(@Valid @RequestBody PositionCreateDto positionCreateDto) {
         return VsResponseUtil.success(positionService.create(positionCreateDto));
     }
@@ -44,6 +46,7 @@ public class PositionController {
     @Tag(name = "position-controller")
     @Operation(summary = "API update position")
     @PatchMapping(UrlConstant.Position.UPDATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updatePosition(@PathVariable Integer id,
                                             @Valid @RequestBody PositionUpdateDto positionUpdateDto) {
         return VsResponseUtil.success(positionService.update(id, positionUpdateDto));
@@ -52,6 +55,7 @@ public class PositionController {
     @Tag(name = "position-controller")
     @Operation(summary = "API delete position")
     @DeleteMapping(UrlConstant.Position.DELETE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> deletePosition(@PathVariable Integer id) {
         return VsResponseUtil.success(positionService.delete(id));
     }

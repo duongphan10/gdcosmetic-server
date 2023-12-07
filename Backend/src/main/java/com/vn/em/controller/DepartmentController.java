@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,6 +37,7 @@ public class DepartmentController {
     @Tag(name = "department-controller")
     @Operation(summary = "API create department")
     @PostMapping(UrlConstant.Department.CREATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> createDepartment(@Valid @RequestBody DepartmentRequestDto departmentRequestDto) {
         return VsResponseUtil.success(departmentService.create(departmentRequestDto));
     }
@@ -43,6 +45,7 @@ public class DepartmentController {
     @Tag(name = "department-controller")
     @Operation(summary = "API update department")
     @PatchMapping(UrlConstant.Department.UPDATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updateDepartment(@PathVariable Integer id,
                                               @Valid @RequestBody DepartmentRequestDto departmentRequestDto) {
         return VsResponseUtil.success(departmentService.update(id, departmentRequestDto));
@@ -51,6 +54,7 @@ public class DepartmentController {
     @Tag(name = "department-controller")
     @Operation(summary = "API delete department")
     @DeleteMapping(UrlConstant.Department.DELETE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> deleteDepartment(@PathVariable Integer id) {
         return VsResponseUtil.success(departmentService.delete(id));
     }

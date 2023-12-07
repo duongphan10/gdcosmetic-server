@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -54,6 +55,7 @@ public class TaskController {
     @Tag(name = "task-controller")
     @Operation(summary = "API create task")
     @PostMapping(UrlConstant.Task.CREATE)
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
     public ResponseEntity<?> createTask(@Parameter(name = "principal", hidden = true)
                                         @CurrentUser UserPrincipal user,
                                         @Valid @RequestBody TaskCreateDto taskCreateDto) {
@@ -63,6 +65,7 @@ public class TaskController {
     @Tag(name = "task-controller")
     @Operation(summary = "API update task by id")
     @PatchMapping(UrlConstant.Task.UPDATE)
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
     public ResponseEntity<?> updateTaskById(@Parameter(name = "principal", hidden = true)
                                             @CurrentUser UserPrincipal user,
                                             @PathVariable Integer id,
@@ -73,6 +76,7 @@ public class TaskController {
     @Tag(name = "task-controller")
     @Operation(summary = "API delete task by id")
     @DeleteMapping(UrlConstant.Task.DELETE)
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
     public ResponseEntity<?> deleteTaskById(@Parameter(name = "principal", hidden = true)
                                             @CurrentUser UserPrincipal user,
                                             @PathVariable Integer id) {

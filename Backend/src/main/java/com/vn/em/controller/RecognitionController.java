@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,6 +36,7 @@ public class RecognitionController {
     @Tag(name = "recognition-controller")
     @Operation(summary = "API get all recognition")
     @GetMapping(UrlConstant.Recognition.GET_ALL)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> getAllRecognition(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                                @RequestParam(name = "statusId", required = false) Integer statusId,
                                                @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
@@ -44,6 +46,7 @@ public class RecognitionController {
     @Tag(name = "recognition-controller")
     @Operation(summary = "API get all my recognition create")
     @GetMapping(UrlConstant.Recognition.GET_ALL_BY_USER_CREATE)
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
     public ResponseEntity<?> getAllMyRecognitionCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                                        @RequestParam(name = "statusId", required = false) Integer statusId,
                                                        @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto,
@@ -55,6 +58,7 @@ public class RecognitionController {
     @Tag(name = "recognition-controller")
     @Operation(summary = "API create recognition")
     @PostMapping(UrlConstant.Recognition.CREATE)
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
     public ResponseEntity<?> createRecognition(@Valid @RequestBody RecognitionCreateDto recognitionCreateDto) {
         return VsResponseUtil.success(recognitionService.create(recognitionCreateDto));
     }
@@ -62,6 +66,7 @@ public class RecognitionController {
     @Tag(name = "recognition-controller")
     @Operation(summary = "API update recognition by id")
     @PatchMapping(UrlConstant.Recognition.UPDATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updateRecognitionById(@PathVariable Integer id,
                                                    @Valid @RequestBody RecognitionUpdateDto recognitionUpdateDto) {
         return VsResponseUtil.success(recognitionService.updateById(id, recognitionUpdateDto));
@@ -70,6 +75,7 @@ public class RecognitionController {
     @Tag(name = "recognition-controller")
     @Operation(summary = "API delete recognition by id")
     @DeleteMapping(UrlConstant.Recognition.DELETE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> deleteRecognitionById(@PathVariable Integer id) {
         return VsResponseUtil.success(recognitionService.deleteById(id));
     }

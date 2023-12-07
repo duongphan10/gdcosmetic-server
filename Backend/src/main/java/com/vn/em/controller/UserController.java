@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -42,6 +43,7 @@ public class UserController {
     @Tag(name = "user-controller")
     @Operation(summary = "API get all user")
     @GetMapping(UrlConstant.User.GET_ALL_USER)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> getAllUsers(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                          @RequestParam(name = "enabled", required = false) Boolean enabled,
                                          @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
@@ -51,6 +53,7 @@ public class UserController {
     @Tag(name = "user-controller")
     @Operation(summary = "API create user")
     @PostMapping(UrlConstant.User.CREATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateDto userCreateDto) {
         return VsResponseUtil.success(userService.createUser(userCreateDto));
     }
@@ -58,6 +61,7 @@ public class UserController {
     @Tag(name = "user-controller")
     @Operation(summary = "API update user by id")
     @PatchMapping(UrlConstant.User.UPDATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updateUserById(@Parameter(name = "principal", hidden = true)
                                             @CurrentUser UserPrincipal user,
                                             @Valid @ModelAttribute UserUpdateDto userUpdateDto) {
@@ -94,6 +98,7 @@ public class UserController {
     @Tag(name = "user-controller")
     @Operation(summary = "API delete user by id")
     @DeleteMapping(UrlConstant.User.DELETE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> deleteUserById(@PathVariable Integer id) {
         return VsResponseUtil.success(userService.deleteUserById(id));
     }

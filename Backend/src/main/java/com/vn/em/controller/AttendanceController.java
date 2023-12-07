@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,6 +33,7 @@ public class AttendanceController {
     @Tag(name = "attendance-controller")
     @Operation(summary = "API get all attendance")
     @GetMapping(UrlConstant.Attendance.GET_ALL)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> getAllAttendance(@RequestParam(name = "year", required = false) Integer year,
                                               @RequestParam(name = "month", required = false) Integer month,
                                               @RequestParam(name = "departmentId", required = false) Integer departmentId,
@@ -42,6 +44,7 @@ public class AttendanceController {
     @Tag(name = "attendance-controller")
     @Operation(summary = "API create attendance")
     @PostMapping(UrlConstant.Attendance.CREATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> createAttendance(@Valid @RequestBody AttendanceCreateDto attendanceCreateDto) {
         return VsResponseUtil.success(attendanceService.create(attendanceCreateDto));
     }
@@ -49,6 +52,7 @@ public class AttendanceController {
     @Tag(name = "attendance-controller")
     @Operation(summary = "API update attendance by id")
     @PatchMapping(UrlConstant.Attendance.UPDATE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updateAttendanceById(@PathVariable Integer id,
                                                   @Valid @RequestBody AttendanceUpdateDto attendanceUpdateDto) {
         return VsResponseUtil.success(attendanceService.updateById(id, attendanceUpdateDto));
@@ -57,6 +61,7 @@ public class AttendanceController {
     @Tag(name = "attendance-controller")
     @Operation(summary = "API delete attendance by id")
     @DeleteMapping(UrlConstant.Attendance.DELETE)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> deleteAttendanceById(@PathVariable Integer id) {
         return VsResponseUtil.success(attendanceService.deleteById(id));
     }
