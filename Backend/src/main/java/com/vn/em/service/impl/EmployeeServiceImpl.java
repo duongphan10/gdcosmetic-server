@@ -1,6 +1,9 @@
 package com.vn.em.service.impl;
 
-import com.vn.em.constant.*;
+import com.vn.em.constant.DataConstant;
+import com.vn.em.constant.ErrorMessage;
+import com.vn.em.constant.MessageConstant;
+import com.vn.em.constant.SortByDataConstant;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
 import com.vn.em.domain.dto.pagination.PaginationResponseDto;
 import com.vn.em.domain.dto.pagination.PagingMeta;
@@ -17,8 +20,8 @@ import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.*;
 import com.vn.em.service.EmployeeService;
 import com.vn.em.util.CodeUtil;
-import com.vn.em.util.FileUtil;
 import com.vn.em.util.PaginationUtil;
+import com.vn.em.util.UploadFileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +39,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
     private final EmployeeMapper employeeMapper;
+    private final UploadFileUtil uploadFileUtil;
 
     @Override
     public EmployeeDto getById(Integer id) {
@@ -84,7 +88,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee employee = employeeMapper.mapEmployeeCreateDtoToEmployee(employeeCreateDto);
         employee.setEmployeeCode("");
-        employee.setImage(FileUtil.saveFile(CommonConstant.UPLOAD_PATH_IMAGE, employeeCreateDto.getImage()));
+        employee.setImage(uploadFileUtil.uploadFile(employeeCreateDto.getImage()));
         employee.setPosition(position);
         employee.setStatus(status);
         employeeRepository.save(employee);
@@ -106,8 +110,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeMapper.update(employee, employeeUpdateDto);
         if (employeeUpdateDto.getImage() != null) {
-            FileUtil.deleteFile(employee.getImage());
-            employee.setImage(FileUtil.saveFile(CommonConstant.UPLOAD_PATH_IMAGE, employeeUpdateDto.getImage()));
+            uploadFileUtil.destroyFileWithUrl(employee.getImage());
+            employee.setImage(uploadFileUtil.uploadFile(employeeUpdateDto.getImage()));
         }
         if (!employee.getPosition().getDepartment().getId().equals(position.getDepartment().getId())) {
             String newEmployeeCode = CodeUtil.generateEmployeeCode(position.getDepartment().getId(), employee.getId());
@@ -125,7 +129,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public CommonResponseDto deleteById(Integer id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
-        FileUtil.deleteFile(employee.getImage());
+        uploadFileUtil.destroyFileWithUrl(employee.getImage());
         employeeRepository.delete(employee);
         return new CommonResponseDto(true, MessageConstant.DELETE_EMPLOYEE_SUCCESSFULLY);
     }

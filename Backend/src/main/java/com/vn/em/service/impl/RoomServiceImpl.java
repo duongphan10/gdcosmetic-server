@@ -1,6 +1,5 @@
 package com.vn.em.service.impl;
 
-import com.vn.em.constant.CommonConstant;
 import com.vn.em.constant.ErrorMessage;
 import com.vn.em.constant.MessageConstant;
 import com.vn.em.domain.dto.pagination.PaginationFullRequestDto;
@@ -22,8 +21,8 @@ import com.vn.em.repository.RoomRepository;
 import com.vn.em.repository.UserRepository;
 import com.vn.em.repository.UserRoomRepository;
 import com.vn.em.service.RoomService;
-import com.vn.em.util.FileUtil;
 import com.vn.em.util.PaginationUtil;
+import com.vn.em.util.UploadFileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +38,7 @@ public class RoomServiceImpl implements RoomService {
     private final UserRepository userRepository;
     private final UserRoomRepository userRoomRepository;
     private final RoomMapper roomMapper;
+    private final UploadFileUtil uploadFileUtil;
 
     @Override
     public RoomDto getById(Integer id) {
@@ -91,9 +91,9 @@ public class RoomServiceImpl implements RoomService {
         roomMapper.update(room, roomUpdateDto);
         if (roomUpdateDto.getAvatar() != null) {
             if (room.getRoomAvatar() != null) {
-                FileUtil.deleteFile(room.getRoomAvatar());
+                uploadFileUtil.destroyFileWithUrl(room.getRoomAvatar());
             }
-            room.setRoomAvatar(FileUtil.saveFile(CommonConstant.UPLOAD_PATH_IMAGE, roomUpdateDto.getAvatar()));
+            room.setRoomAvatar(uploadFileUtil.uploadFile(roomUpdateDto.getAvatar()));
         }
         return roomMapper.mapRoomToRoomDto(roomRepository.save(room));
     }
@@ -106,7 +106,7 @@ public class RoomServiceImpl implements RoomService {
             throw new ForbiddenException(ErrorMessage.FORBIDDEN_UPDATE_DELETE);
         }
         if (room.getRoomAvatar() != null) {
-            FileUtil.deleteFile(room.getRoomAvatar());
+            uploadFileUtil.destroyFileWithUrl(room.getRoomAvatar());
         }
         roomRepository.delete(room);
         return new CommonResponseDto(true, MessageConstant.DELETE_ROOM_SUCCESSFULLY);

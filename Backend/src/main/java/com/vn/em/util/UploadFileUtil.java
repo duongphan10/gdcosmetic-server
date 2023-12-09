@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -43,7 +44,11 @@ public class UploadFileUtil {
         int endIndex = url.lastIndexOf(".");
         String publicId = url.substring(startIndex, endIndex);
         try {
-            Map<?, ?> result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            String resourceType = getResourceTypeFromUrl(url);
+            Map<String, String> params = new HashMap<>();
+            params.put("resource_type", resourceType);
+
+            Map<?, ?> result = cloudinary.uploader().destroy(publicId, params);
             log.info(String.format("Destroy image public id %s %s", publicId, result.toString()));
         } catch (IOException e) {
             throw new UploadFileException("Remove file failed!");
@@ -57,11 +62,29 @@ public class UploadFileUtil {
                 return "image";
             } else if (contentType.startsWith("video/")) {
                 return "video";
+            } else if (contentType.startsWith("audio/")) {
+                return "audio";
             } else {
                 return "auto";
             }
         } else {
             throw new UploadFileException("Invalid file!");
+        }
+    }
+
+    private static String getResourceTypeFromUrl(String url) {
+        if (url.contains("/video/")) {
+            return "video";
+        } else if (url.contains("/image/")) {
+            return "image";
+        } else if (url.contains("/audio/")) {
+            return "audio";
+        } else if (url.contains("/raw/")) {
+            return "raw";
+        } else if (url.contains("/3d/")) {
+            return "3d";
+        } else {
+            return "auto";
         }
     }
 

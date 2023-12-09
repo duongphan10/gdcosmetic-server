@@ -1,6 +1,5 @@
 package com.vn.em.service.impl;
 
-import com.vn.em.constant.CommonConstant;
 import com.vn.em.constant.ErrorMessage;
 import com.vn.em.constant.MessageConstant;
 import com.vn.em.constant.SortByDataConstant;
@@ -18,8 +17,8 @@ import com.vn.em.exception.AlreadyExistException;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.*;
 import com.vn.em.service.UserService;
-import com.vn.em.util.FileUtil;
 import com.vn.em.util.PaginationUtil;
+import com.vn.em.util.UploadFileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final RoomRepository roomRepository;
     private final UserMapper userMapper;
+    private final UploadFileUtil uploadFileUtil;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -131,9 +131,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         if (user.getAvatar() != null) {
-            FileUtil.deleteFile(user.getAvatar());
+            uploadFileUtil.destroyFileWithUrl(user.getAvatar());
         }
-        user.setAvatar(FileUtil.saveFile(CommonConstant.UPLOAD_PATH_IMAGE, changeAvatarRequestDto.getAvatar()));
+        user.setAvatar(uploadFileUtil.uploadFile(changeAvatarRequestDto.getAvatar()));
         return userMapper.mapUserToUserDto(userRepository.save(user));
     }
 
@@ -169,6 +169,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         userRepository.delete(user);
+        uploadFileUtil.destroyFileWithUrl(user.getAvatar());
         return new CommonResponseDto(true, MessageConstant.DELETE_USER_SUCCESSFULLY);
     }
 
