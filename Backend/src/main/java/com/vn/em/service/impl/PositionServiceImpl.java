@@ -35,7 +35,11 @@ public class PositionServiceImpl implements PositionService {
 
     @Override
     public List<PositionDto> getAll(Integer departmentId) {
-        List<Position> positions = positionRepository.findAllByDepartmentId(departmentId);
+        if (departmentId > 0) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        List<Position> positions = positionRepository.getAllByDepartmentId(departmentId);
         return positionMapper.mapPositionsToPositionDtos(positions);
     }
 

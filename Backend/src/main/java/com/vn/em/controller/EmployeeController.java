@@ -40,10 +40,18 @@ public class EmployeeController {
     @Tag(name = "employee-controller")
     @Operation(summary = "API get all employee")
     @GetMapping(UrlConstant.Employee.GET_ALL)
-    public ResponseEntity<?> getAllEmployee(@RequestParam(name = "departmentId", required = false) Integer departmentId,
+    public ResponseEntity<?> getAllEmployee(@RequestParam(name = "departmentId", required = false, defaultValue = "0") Integer departmentId,
+                                            @RequestParam(name = "statusId", required = false, defaultValue = "0") Integer statusId) {
+        return VsResponseUtil.success(employeeService.getAll(departmentId, statusId));
+    }
+
+    @Tag(name = "employee-controller")
+    @Operation(summary = "API search employee")
+    @GetMapping(UrlConstant.Employee.SEARCH)
+    public ResponseEntity<?> searchEmployee(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                             @RequestParam(name = "statusId", required = false) Integer statusId,
                                             @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
-        return VsResponseUtil.success(employeeService.getAll(departmentId, statusId, paginationFullRequestDto));
+        return VsResponseUtil.success(employeeService.search(departmentId, statusId, paginationFullRequestDto));
     }
 
     @Tag(name = "employee-controller")

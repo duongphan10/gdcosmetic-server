@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface PositionRepository extends JpaRepository<Position, Integer> {
-    @Query(value = "SELECT * FROM positions WHERE department_id = ?1", nativeQuery = true)
-    List<Position> findAllByDepartmentId(Integer departmentId);
+    @Query(value = "SELECT * FROM positions " +
+            "WHERE ?1 = 0 OR department_id = ?1", nativeQuery = true)
+    List<Position> getAllByDepartmentId(Integer departmentId);
 }

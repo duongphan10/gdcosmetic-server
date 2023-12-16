@@ -8,13 +8,17 @@ import com.vn.em.domain.dto.request.EmployeeUpdateDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
 import com.vn.em.domain.dto.response.EmployeeDto;
 
+import java.util.List;
+
 public interface EmployeeService {
 
     EmployeeDto getById(Integer id);
 
     EmployeeDto getByEmployeeCode(String employeeCode);
 
-    PaginationResponseDto<EmployeeDto> getAll(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
+    List<EmployeeDto> getAll(Integer departmentId, Integer statusId);
+
+    PaginationResponseDto<EmployeeDto> search(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
 
     EmployeeDto create(EmployeeCreateDto employeeCreateDto);
 

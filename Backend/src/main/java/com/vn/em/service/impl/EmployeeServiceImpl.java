@@ -56,7 +56,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public PaginationResponseDto<EmployeeDto> getAll(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
+    public List<EmployeeDto> getAll(Integer departmentId, Integer statusId) {
+        if (departmentId > 0) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        if (statusId > 0) {
+            statusRepository.findById(statusId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
+        }
+        List<Employee> employeeDtos = employeeRepository.getAll(departmentId, statusId);
+        return employeeMapper.mapEmployeesToEmployeeDtos(employeeDtos);
+    }
+
+    @Override
+    public PaginationResponseDto<EmployeeDto> search(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
         if (departmentId != null) {
             departmentRepository.findById(departmentId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
@@ -68,7 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.EMPLOYEE);
 
-        Page<Employee> employeePage = employeeRepository.getAll(paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
+        Page<Employee> employeePage = employeeRepository.search(paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.EMPLOYEE, employeePage);
         List<EmployeeDto> employeeDtos = employeeMapper.mapEmployeesToEmployeeDtos(employeePage.getContent());

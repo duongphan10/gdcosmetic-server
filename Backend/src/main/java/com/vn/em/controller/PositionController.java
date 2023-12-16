@@ -31,7 +31,7 @@ public class PositionController {
     @Tag(name = "position-controller")
     @Operation(summary = "API get all position")
     @GetMapping(UrlConstant.Position.GET_ALL)
-    public ResponseEntity<?> getAllPosition(@PathVariable Integer departmentId) {
+    public ResponseEntity<?> getAllPosition(@RequestParam(name = "departmentId", required = false, defaultValue = "0") Integer departmentId) {
         return VsResponseUtil.success(positionService.getAll(departmentId));
     }
 

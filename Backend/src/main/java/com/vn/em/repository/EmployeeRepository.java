@@ -22,13 +22,20 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query(value = "SELECT e.* FROM employees e " +
             "INNER JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
+            "   (?1 = 0 OR p.department_id = ?1) " +
+            "   AND (?2 = 0 OR e.status_id = ?2)", nativeQuery = true)
+    List<Employee> getAll(Integer departmentId, Integer statusId);
+
+    @Query(value = "SELECT e.* FROM employees e " +
+            "INNER JOIN positions p ON e.position_id = p.id " +
+            "WHERE " +
             "   (?1 = '' OR (LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "               OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "               OR LOWER(p.name) LIKE LOWER(CONCAT('%', ?1, '%'))) " +
             "   ) " +
             "   AND (?2 IS NULL OR p.department_id = ?2) " +
             "   AND (?3 IS NULL OR e.status_id = ?3)", nativeQuery = true)
-    Page<Employee> getAll(String keyword, Integer departmentId, Integer statusId, Pageable pageable);
+    Page<Employee> search(String keyword, Integer departmentId, Integer statusId, Pageable pageable);
 
     @Modifying
     @Query(value = "UPDATE employees e " +
