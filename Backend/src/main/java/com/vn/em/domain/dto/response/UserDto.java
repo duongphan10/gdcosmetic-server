@@ -25,6 +25,7 @@ public class UserDto extends DateAuditingDto {
     private String departmentName;
     private String positionName;
     private String employeeStatusName;
+    private Integer roleId;
     private String roleName;
     private boolean enabled;
 

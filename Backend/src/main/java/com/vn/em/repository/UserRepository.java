@@ -39,6 +39,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "INNER JOIN employees e ON u.employee_id = e.id " +
             "INNER JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
+            "   (?1 IS NULL OR p.department_id = ?1) " +
+            "   AND (?2 IS NULL OR u.enabled = ?2)", nativeQuery = true)
+    List<User> getAll(Integer departmentId, Boolean enabled);
+
+    @Query(value = "SELECT u.* FROM users u " +
+            "INNER JOIN employees e ON u.employee_id = e.id " +
+            "INNER JOIN positions p ON e.position_id = p.id " +
+            "WHERE " +
             "   (?1 = '' OR (LOWER(u.username) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "               OR LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "               OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', ?1, '%')) " +
@@ -46,7 +54,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "   )" +
             "   AND (?2 IS NULL OR p.department_id = ?2) " +
             "   AND (?3 IS NULL OR u.enabled = ?3)", nativeQuery = true)
-    Page<User> getAll(String keyword, Integer departmentId, Boolean enabled, Pageable pageable);
+    Page<User> search(String keyword, Integer departmentId, Boolean enabled, Pageable pageable);
 
     @Query(value = "SELECT " +
             "   u.* " +

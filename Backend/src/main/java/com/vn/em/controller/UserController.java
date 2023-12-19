@@ -42,12 +42,21 @@ public class UserController {
 
     @Tag(name = "user-controller")
     @Operation(summary = "API get all user")
-    @GetMapping(UrlConstant.User.GET_ALL_USER)
+    @GetMapping(UrlConstant.User.GET_ALL)
     @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> getAllUsers(@RequestParam(name = "departmentId", required = false) Integer departmentId,
+                                         @RequestParam(name = "enabled", required = false) Boolean enabled) {
+        return VsResponseUtil.success(userService.getAll(departmentId, enabled));
+    }
+
+    @Tag(name = "user-controller")
+    @Operation(summary = "API search user")
+    @GetMapping(UrlConstant.User.SEARCH)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
+    public ResponseEntity<?> searchUsers(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                          @RequestParam(name = "enabled", required = false) Boolean enabled,
                                          @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
-        return VsResponseUtil.success(userService.getAll(departmentId, enabled, paginationFullRequestDto));
+        return VsResponseUtil.success(userService.search(departmentId, enabled, paginationFullRequestDto));
     }
 
     @Tag(name = "user-controller")
@@ -62,10 +71,9 @@ public class UserController {
     @Operation(summary = "API update user by id")
     @PatchMapping(UrlConstant.User.UPDATE)
     @PreAuthorize("hasRole('ROLE_LEADER')")
-    public ResponseEntity<?> updateUserById(@Parameter(name = "principal", hidden = true)
-                                            @CurrentUser UserPrincipal user,
-                                            @Valid @ModelAttribute UserUpdateDto userUpdateDto) {
-        return VsResponseUtil.success(userService.updateUserById(user.getId(), userUpdateDto));
+    public ResponseEntity<?> updateUserById(@PathVariable Integer id,
+                                            @Valid @RequestBody UserUpdateDto userUpdateDto) {
+        return VsResponseUtil.success(userService.updateUserById(id, userUpdateDto));
     }
 
     @Tag(name = "user-controller")

@@ -59,7 +59,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PaginationResponseDto<UserDto> getAll(Integer departmentId, Boolean enabled, PaginationFullRequestDto paginationFullRequestDto) {
+    public List<UserDto> getAll(Integer departmentId, Boolean enabled) {
+        if (departmentId != null) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        List<User> users = userRepository.getAll(departmentId, enabled);
+        return userMapper.mapUsersToUserDtos(users);
+    }
+
+    @Override
+    public PaginationResponseDto<UserDto> search(Integer departmentId, Boolean enabled, PaginationFullRequestDto paginationFullRequestDto) {
         if (departmentId != null) {
             departmentRepository.findById(departmentId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
@@ -68,7 +78,7 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.USER);
 
         //Create Output
-        Page<User> userPage = userRepository.getAll(paginationFullRequestDto.getKeyword(), departmentId, enabled, pageable);
+        Page<User> userPage = userRepository.search(paginationFullRequestDto.getKeyword(), departmentId, enabled, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.USER, userPage);
         List<UserDto> userDtos = userMapper.mapUsersToUserDtos(userPage.getContent());
@@ -117,7 +127,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         Role role = roleRepository.findById(userUpdateDto.getRoleId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Role.ERR_NOT_FOUND_ID, new String[]{userUpdateDto.getRoleId().toString()}));
-        if (userRepository.existsByUsername(userUpdateDto.getUsername())) {
+        if (!user.getUsername().equals(userUpdateDto.getUsername()) && userRepository.existsByUsername(userUpdateDto.getUsername())) {
             throw new AlreadyExistException(ErrorMessage.User.ERR_ALREADY_EXIST,
                     new String[]{"username: " + userUpdateDto.getUsername()});
         }
@@ -169,7 +179,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         userRepository.delete(user);
-        uploadFileUtil.destroyFileWithUrl(user.getAvatar());
+        if (user.getAvatar() != null) {
+            uploadFileUtil.destroyFileWithUrl(user.getAvatar());
+        }
         return new CommonResponseDto(true, MessageConstant.DELETE_USER_SUCCESSFULLY);
     }
 

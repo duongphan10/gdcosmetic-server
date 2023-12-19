@@ -25,6 +25,7 @@ public interface UserMapper {
             @Mapping(target = "departmentName", source = "employee.position.department.name"),
             @Mapping(target = "positionName", source = "employee.position.name"),
             @Mapping(target = "employeeStatusName", source = "employee.status.name"),
+            @Mapping(target = "roleId", source = "role.id"),
             @Mapping(target = "roleName", source = "role.name"),
             @Mapping(target = "enabled", source = "enabled"),
     })

@@ -6,12 +6,16 @@ import com.vn.em.domain.dto.request.*;
 import com.vn.em.domain.dto.response.CommonResponseDto;
 import com.vn.em.domain.dto.response.UserDto;
 
+import java.util.List;
+
 public interface UserService {
     UserDto getUserById(Integer id);
 
     UserDto getCurrentUser(Integer id);
 
-    PaginationResponseDto<UserDto> getAll(Integer departmentId, Boolean enabled, PaginationFullRequestDto request);
+    List<UserDto> getAll(Integer departmentId, Boolean enabled);
+
+    PaginationResponseDto<UserDto> search(Integer departmentId, Boolean enabled, PaginationFullRequestDto request);
 
     PaginationResponseDto<UserDto> searchOtherUser(Integer roomId, PaginationFullRequestDto request);
 
