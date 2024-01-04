@@ -15,6 +15,7 @@ import com.vn.em.domain.entity.Employee;
 import com.vn.em.domain.entity.Position;
 import com.vn.em.domain.entity.Status;
 import com.vn.em.domain.mapper.EmployeeMapper;
+import com.vn.em.exception.AlreadyExistException;
 import com.vn.em.exception.InvalidException;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.*;
@@ -38,6 +39,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final StatusRepository statusRepository;
     private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final EmployeeMapper employeeMapper;
     private final UploadFileUtil uploadFileUtil;
 
@@ -70,6 +72,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<EmployeeDto> getAllByRole(Integer departmentId, Integer roleId) {
+        if (departmentId > 0) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        if (roleId > 0) {
+            roleRepository.findById(roleId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Role.ERR_NOT_FOUND_ID, new String[]{roleId.toString()}));
+        }
+        List<Employee> employeeDtos = employeeRepository.getAllByRole(departmentId, roleId);
+        return employeeMapper.mapEmployeesToEmployeeDtos(employeeDtos);
+    }
+
+    @Override
     public PaginationResponseDto<EmployeeDto> search(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
         if (departmentId != null) {
             departmentRepository.findById(departmentId)
@@ -92,6 +108,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDto create(EmployeeCreateDto employeeCreateDto) {
+        if (employeeRepository.existsByEmail(employeeCreateDto.getEmail())) {
+            throw new AlreadyExistException(ErrorMessage.Employee.ERR_ALREADY_EXIST,
+                    new String[]{"email: " + employeeCreateDto.getEmail()});
+        }
+
         Position position = positionRepository.findById(employeeCreateDto.getPositionId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Position.ERR_NOT_FOUND_ID, new String[]{employeeCreateDto.getPositionId().toString()}));
         Status status = statusRepository.findById(employeeCreateDto.getStatusId())
@@ -121,6 +142,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Position.ERR_NOT_FOUND_ID, new String[]{employeeUpdateDto.getPositionId().toString()}));
         Status status = statusRepository.findById(employeeUpdateDto.getStatusId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{employeeUpdateDto.getStatusId().toString()}));
+
+        if (!employee.getEmail().equals(employeeUpdateDto.getEmail()) && employeeRepository.existsByEmail(employeeUpdateDto.getEmail())) {
+            throw new AlreadyExistException(ErrorMessage.Employee.ERR_ALREADY_EXIST,
+                    new String[]{"email: " + employeeUpdateDto.getEmail()});
+        }
 
         employeeMapper.update(employee, employeeUpdateDto);
         if (employeeUpdateDto.getImage() != null) {

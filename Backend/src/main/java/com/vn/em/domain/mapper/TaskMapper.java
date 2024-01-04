@@ -23,7 +23,11 @@ public interface TaskMapper {
     @Mappings({
             @Mapping(target = "projectId", source = "project.id"),
             @Mapping(target = "projectName", source = "project.name"),
+            @Mapping(target = "projectManager", source = "project.projectManager.fullName"),
             @Mapping(target = "employeeId", source = "employee.id"),
+            @Mapping(target = "employeeCode", source = "employee.employeeCode"),
+            @Mapping(target = "employeeFullName", source = "employee.fullName"),
+            @Mapping(target = "employeeDepartmentId", source = "employee.position.department.id"),
             @Mapping(target = "statusId", source = "status.id"),
             @Mapping(target = "statusName", source = "status.name"),
     })

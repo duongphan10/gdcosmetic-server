@@ -17,14 +17,25 @@ import java.util.Optional;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
+    boolean existsByEmail(String email);
+
     Optional<Employee> findByEmployeeCode(String employeeCode);
 
     @Query(value = "SELECT e.* FROM employees e " +
             "INNER JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 = 0 OR p.department_id = ?1) " +
-            "   AND (?2 = 0 OR e.status_id = ?2)", nativeQuery = true)
+            "   AND (?2 = 0 OR e.status_id = ?2) " +
+            "ORDER BY e.created_date DESC ", nativeQuery = true)
     List<Employee> getAll(Integer departmentId, Integer statusId);
+
+    @Query(value = "SELECT e.* FROM employees e " +
+            "INNER JOIN positions p ON e.position_id = p.id " +
+            "INNER JOIN users u ON e.id = u.employee_id " +
+            "WHERE " +
+            "   (?1 = 0 OR p.department_id = ?1) " +
+            "   AND (?2 = 0 OR u.role_id = ?2) ", nativeQuery = true)
+    List<Employee> getAllByRole(Integer departmentId, Integer roleId);
 
     @Query(value = "SELECT e.* FROM employees e " +
             "INNER JOIN positions p ON e.position_id = p.id " +

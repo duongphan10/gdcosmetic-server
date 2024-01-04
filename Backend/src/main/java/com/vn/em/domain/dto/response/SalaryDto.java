@@ -25,5 +25,11 @@ public class SalaryDto extends UserDateAuditingDto {
     private Boolean paymentStatus;
     private LocalDateTime paymentDate;
     private Integer attendanceId;
+    private Integer year;
+    private Integer month;
+    private String employeeCode;
+    private String fullName;
+    private String departmentName;
+    private String salary;
 
 }

@@ -59,6 +59,7 @@ public class UrlConstant {
         public static final String GET_BY_ID = PRE_FIX + "/{id}";
         public static final String GET_BY_CODE = PRE_FIX + "/get";
         public static final String GET_ALL = PRE_FIX + "/all";
+        public static final String GET_ALL_BY_ROLE = PRE_FIX;
         public static final String SEARCH = PRE_FIX + "/search";
         public static final String CREATE = PRE_FIX + "/create";
         public static final String UPDATE = PRE_FIX + "/{id}";
@@ -72,7 +73,9 @@ public class UrlConstant {
         public static final String PRE_FIX = "/salary-adjustment";
         public static final String GET_BY_ID = PRE_FIX + "/{id}";
         public static final String GET_ALL = PRE_FIX + "/all";
-        public static final String GET_ALL_BY_USER_CREATE = PRE_FIX + "/me/all";
+        public static final String SEARCH = PRE_FIX + "/search";
+        public static final String GET_MY_CREATE = PRE_FIX + "/my/all";
+        public static final String SEARCH_MY_CREATE = PRE_FIX + "/my/search";
         public static final String CREATE = PRE_FIX + "/create";
         public static final String UPDATE = PRE_FIX + "/{id}";
         public static final String DELETE = PRE_FIX + "/{id}";
@@ -85,7 +88,9 @@ public class UrlConstant {
         public static final String PRE_FIX = "/recognition";
         public static final String GET_BY_ID = PRE_FIX + "/{id}";
         public static final String GET_ALL = PRE_FIX + "/all";
-        public static final String GET_ALL_BY_USER_CREATE = PRE_FIX + "/me/all";
+        public static final String SEARCH = PRE_FIX + "/search";
+        public static final String GET_MY_CREATE = PRE_FIX + "/my/all";
+        public static final String SEARCH_MY_CREATE = PRE_FIX + "/my/search";
         public static final String CREATE = PRE_FIX + "/create";
         public static final String UPDATE = PRE_FIX + "/{id}";
         public static final String DELETE = PRE_FIX + "/{id}";
@@ -98,6 +103,7 @@ public class UrlConstant {
         public static final String PRE_FIX = "/attendance";
         public static final String GET_BY_ID = PRE_FIX + "/{id}";
         public static final String GET_ALL = PRE_FIX + "/all";
+        public static final String SEARCH = PRE_FIX + "/search";
         public static final String CREATE = PRE_FIX + "/create";
         public static final String UPDATE = PRE_FIX + "/{id}";
         public static final String DELETE = PRE_FIX + "/{id}";
@@ -110,6 +116,7 @@ public class UrlConstant {
         public static final String PRE_FIX = "/salary";
         public static final String GET_BY_ID = PRE_FIX + "/{id}";
         public static final String GET_ALL = PRE_FIX + "/all";
+        public static final String SEARCH = PRE_FIX + "/search";
         public static final String CREATE = PRE_FIX + "/create";
         public static final String UPDATE = PRE_FIX + "/{id}";
         public static final String PAY_ALL = PRE_FIX + "/pay/all";
@@ -124,7 +131,9 @@ public class UrlConstant {
         public static final String PRE_FIX = "/project";
         public static final String GET_BY_ID = PRE_FIX + "/{id}";
         public static final String GET_ALL = PRE_FIX + "/all";
+        public static final String SEARCH = PRE_FIX + "/search";
         public static final String GET_ALL_MY_PROJECT = PRE_FIX + "/my/all";
+        public static final String SEARCH_MY_PROJECT = PRE_FIX + "/my/search";
         public static final String CREATE = PRE_FIX + "/create";
         public static final String UPDATE = PRE_FIX + "/{id}";
         public static final String DELETE = PRE_FIX + "/{id}";
@@ -136,8 +145,9 @@ public class UrlConstant {
     public static class Task {
         public static final String PRE_FIX = "/task";
         public static final String GET_BY_ID = PRE_FIX + "/{id}";
-        public static final String GET_ALL_BY_PROJECT_ID = PRE_FIX + "/all/{projectId}";
-        public static final String GET_ALL_MY_TASK = PRE_FIX + "/my/all";
+        public static final String GET_ALL = PRE_FIX + "/all";
+        public static final String GET_MY_TASK = PRE_FIX + "/my";
+        public static final String SEARCH_MY_TASK = PRE_FIX + "/my/search";
         public static final String CREATE = PRE_FIX + "/create";
         public static final String UPDATE = PRE_FIX + "/{id}";
         public static final String DELETE = PRE_FIX + "/{id}";

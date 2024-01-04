@@ -7,8 +7,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface RecognitionRepository extends JpaRepository<Recognition, Integer> {
+
+    @Query(value = "SELECT r.* FROM recognitions r " +
+            "INNER JOIN employees e  ON r.employee_id = e.id " +
+            "INNER JOIN positions p ON e.position_id = p.id " +
+            "WHERE " +
+            "   (?1 IS NULL OR p.department_id = ?1) " +
+            "   AND (?2 IS NULL OR r.status_id = ?2) " +
+            "   AND (?3 IS NULL OR r.type = ?3) " +
+            "ORDER BY r.created_date DESC ", nativeQuery = true)
+    List<Recognition> getAll(Integer departmentId, Integer statusId, Boolean type);
 
     @Query(value = "SELECT r.* FROM recognitions r " +
             "INNER JOIN employees e  ON r.employee_id = e.id " +
@@ -20,7 +32,18 @@ public interface RecognitionRepository extends JpaRepository<Recognition, Intege
             "   ) " +
             "   AND (?2 IS NULL OR p.department_id = ?2) " +
             "   AND (?3 IS NULL OR r.status_id = ?3)", nativeQuery = true)
-    Page<Recognition> getAll(String keyword, Integer departmentId, Integer statusId, Pageable pageable);
+    Page<Recognition> search(String keyword, Integer departmentId, Integer statusId, Pageable pageable);
+
+    @Query(value = "SELECT r.* FROM recognitions r " +
+            "INNER JOIN employees e ON r.employee_id = e.id " +
+            "INNER JOIN positions p ON e.position_id = p.id " +
+            "WHERE " +
+            "   r.created_by = ?1 " +
+            "   AND (?2 IS NULL OR p.department_id = ?2) " +
+            "   AND (?3 IS NULL OR r.status_id = ?3) " +
+            "   AND (?4 IS NULL OR r.type = ?4) " +
+            "ORDER BY r.created_date DESC ", nativeQuery = true)
+    List<Recognition> getMyCreate(Integer userId, Integer departmentId, Integer statusId, Boolean type);
 
     @Query(value = "SELECT r.* FROM recognitions r " +
             "INNER JOIN employees e ON r.employee_id = e.id " +
@@ -33,7 +56,7 @@ public interface RecognitionRepository extends JpaRepository<Recognition, Intege
             "   ) " +
             "   AND (?3 IS NULL OR p.department_id = ?3) " +
             "   AND (?4 IS NULL OR r.status_id = ?4)", nativeQuery = true)
-    Page<Recognition> getAllMyCreate(Integer userId, String keyword, Integer departmentId, Integer statusId, Pageable pageable);
+    Page<Recognition> searchMyCreate(Integer userId, String keyword, Integer departmentId, Integer statusId, Pageable pageable);
 
     @Query(value = "SELECT IFNULL(SUM(IFNULL(r.amount, 0)), 0) AS total_sum " +
             "FROM recognitions r " +

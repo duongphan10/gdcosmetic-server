@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,12 +22,10 @@ public class Recognition extends UserDateAuditing {
     private Boolean type;
     @Column(nullable = false)
     private String reason;
-    @Column(nullable = false)
-    private String description;
     @Column(nullable = true)
     private Long amount;
     @Column(nullable = true)
-    private LocalDate date;
+    private LocalDateTime date;
     @Column(nullable = true)
     private String rejectionReason;
 

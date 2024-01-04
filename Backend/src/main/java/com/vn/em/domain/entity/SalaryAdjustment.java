@@ -17,6 +17,8 @@ public class SalaryAdjustment extends UserDateAuditing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(nullable = false)
+    private Long oldSalary;
+    @Column(nullable = false)
     private Long newSalary;
     @Column(nullable = false)
     private String reason;

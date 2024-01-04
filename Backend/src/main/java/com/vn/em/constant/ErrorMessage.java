@@ -63,6 +63,7 @@ public class ErrorMessage {
         public static final String ERR_NOT_FOUND_ID = "exception.employee.not.found.id";
         public static final String ERR_NOT_FOUND_EMPLOYEE_CODE = "exception.employee.not.found.code";
         public static final String ERR_ALREADY_EXIST_USER = "exception.employee.already.exist.account";
+        public static final String ERR_ALREADY_EXIST = "exception.employee.already.exist";
     }
 
     public static class Status {

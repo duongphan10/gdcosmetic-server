@@ -53,7 +53,17 @@ public class SalaryServiceImpl implements SalaryService {
     }
 
     @Override
-    public PaginationResponseDto<SalaryDto> getAll(Integer year, Integer month, Integer departmentId, PaginationFullRequestDto paginationFullRequestDto) {
+    public List<SalaryDto> getAll(Integer year, Integer month, Integer departmentId) {
+        if (departmentId != null) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        List<Salary> salaries = salaryRepository.getAll(year, month, departmentId);
+        return salaryMapper.mapSalariesToSalaryDtos(salaries);
+    }
+
+    @Override
+    public PaginationResponseDto<SalaryDto> search(Integer year, Integer month, Integer departmentId, PaginationFullRequestDto paginationFullRequestDto) {
         if (departmentId != null) {
             departmentRepository.findById(departmentId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
@@ -61,7 +71,7 @@ public class SalaryServiceImpl implements SalaryService {
 
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.SALARY);
 
-        Page<Salary> salaryPage = salaryRepository.getAll(paginationFullRequestDto.getKeyword(), year, month, departmentId, pageable);
+        Page<Salary> salaryPage = salaryRepository.search(paginationFullRequestDto.getKeyword(), year, month, departmentId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.SALARY, salaryPage);
         List<SalaryDto> salaryDtos = salaryMapper.mapSalariesToSalaryDtos(salaryPage.getContent());
@@ -77,11 +87,11 @@ public class SalaryServiceImpl implements SalaryService {
         }
         if (salaryRepository.countByYearAndMonth(year, month) > 0) {
             throw new AlreadyExistException(ErrorMessage.Salary.ERR_ALREADY_EXIST,
-                    new String[]{year.toString(), String.format("%02d", month)});
+                    new String[]{String.format("%02d", month), year.toString()});
         }
         if (!attendanceRepository.existsByYearAndMonth(year, month)) {
             throw new NotFoundException(ErrorMessage.Attendance.ERR_NOT_FOUND,
-                    new String[]{year.toString(), String.format("%02d", month)});
+                    new String[]{ String.format("%02d", month), year.toString()});
         }
 
         List<Salary> salaries = new ArrayList<>();
@@ -156,7 +166,7 @@ public class SalaryServiceImpl implements SalaryService {
         Integer year = salaryRequestDto.getYear(), month = salaryRequestDto.getMonth();
         if (salaryRepository.countByYearAndMonth(year, month) == 0) {
             throw new NotFoundException(ErrorMessage.Salary.ERR_NOT_FOUND,
-                    new String[]{year.toString(), String.format("%02d", month)});
+                    new String[]{String.format("%02d", month), year.toString()});
         }
         List<Salary> salaries = salaryRepository.getAllByYearAndMonth(year, month);
         for (Salary salary : salaries) {

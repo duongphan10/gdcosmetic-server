@@ -15,6 +15,9 @@ public interface SalaryAdjustmentMapper {
 
     @Mappings({
             @Mapping(target = "employeeId", source = "employee.id"),
+            @Mapping(target = "employeeCode", source = "employee.employeeCode"),
+            @Mapping(target = "fullName", source = "employee.fullName"),
+            @Mapping(target = "departmentName", source = "employee.position.department.name"),
             @Mapping(target = "statusId", source = "status.id"),
             @Mapping(target = "statusName", source = "status.name"),
     })

@@ -7,13 +7,17 @@ import com.vn.em.domain.dto.request.TaskUpdateDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
 import com.vn.em.domain.dto.response.TaskDto;
 
+import java.util.List;
+
 public interface TaskService {
 
     TaskDto getById(Integer id);
 
-    PaginationResponseDto<TaskDto> getAllByProjectId(Integer projectId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
+    List<TaskDto> getAll(Integer userId, Integer projectId, Integer statusId, Integer type);
 
-    PaginationResponseDto<TaskDto> getAllByEmployeeId(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
+    List<TaskDto> getByEmployeeId(Integer userId, Integer statusId);
+
+    PaginationResponseDto<TaskDto> searchByEmployeeId(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
 
     TaskDto create(Integer userId, TaskCreateDto taskCreateDto);
 

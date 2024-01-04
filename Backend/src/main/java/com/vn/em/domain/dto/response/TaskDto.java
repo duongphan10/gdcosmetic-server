@@ -25,7 +25,11 @@ public class TaskDto extends UserDateAuditingDto {
     private String note;
     private Integer projectId;
     private String projectName;
+    private String projectManager;
     private Integer employeeId;
+    private String employeeCode;
+    private String employeeFullName;
+    private Integer employeeDepartmentId;
     private Integer statusId;
     private String statusName;
 

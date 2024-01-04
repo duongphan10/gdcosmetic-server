@@ -16,10 +16,7 @@ import com.vn.em.domain.entity.Status;
 import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.ProjectMapper;
 import com.vn.em.exception.NotFoundException;
-import com.vn.em.repository.EmployeeRepository;
-import com.vn.em.repository.ProjectRepository;
-import com.vn.em.repository.StatusRepository;
-import com.vn.em.repository.UserRepository;
+import com.vn.em.repository.*;
 import com.vn.em.service.NotificationService;
 import com.vn.em.service.ProjectService;
 import com.vn.em.util.PaginationUtil;
@@ -39,6 +36,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final StatusRepository statusRepository;
+    private final DepartmentRepository departmentRepository;
     private final ProjectMapper projectMapper;
     private final NotificationService notificationService;
     private final SocketIOServer server;
@@ -51,14 +49,28 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public PaginationResponseDto<ProjectDto> getAll(Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
+    public List<ProjectDto> getAll(Integer departmentId, Integer statusId) {
+        if (departmentId != null) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        if (statusId != null) {
+            statusRepository.findById(statusId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
+        }
+        List<Project> projects = projectRepository.getAll(departmentId, statusId);
+        return projectMapper.mapProjectsToProjectDtos(projects);
+    }
+
+    @Override
+    public PaginationResponseDto<ProjectDto> search(Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
         if (statusId != null) {
             statusRepository.findById(statusId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
         }
 
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.PROJECT);
-        Page<Project> projectPage = projectRepository.getAll(paginationFullRequestDto.getKeyword(), statusId, pageable);
+        Page<Project> projectPage = projectRepository.search(paginationFullRequestDto.getKeyword(), statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.PROJECT, projectPage);
         List<ProjectDto> projectDtos = projectMapper.mapProjectsToProjectDtos(projectPage.getContent());
@@ -67,7 +79,19 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public PaginationResponseDto<ProjectDto> getAllByUserId(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
+    public List<ProjectDto> getAllByUserId(Integer userId, Integer statusId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
+        if (statusId != null) {
+            statusRepository.findById(statusId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
+        }
+        List<Project> projects = projectRepository.getAllByEmployeeId(user.getEmployee().getId(), statusId);
+        return projectMapper.mapProjectsToProjectDtos(projects);
+    }
+
+    @Override
+    public PaginationResponseDto<ProjectDto> searchByUserId(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
         if (statusId != null) {
@@ -77,7 +101,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.PROJECT);
         Page<Project> projectPage = projectRepository.
-                getAllByEmployeeId(user.getEmployee().getId(), paginationFullRequestDto.getKeyword(), statusId, pageable);
+                searchByEmployeeId(user.getEmployee().getId(), paginationFullRequestDto.getKeyword(), statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.PROJECT, projectPage);
         List<ProjectDto> projectDtos = projectMapper.mapProjectsToProjectDtos(projectPage.getContent());
@@ -98,7 +122,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setStatus(statusRepository.getById(DataConstant.Status.NEW.getId()));
         projectRepository.save(project);
 
-        if (employee != null) {
+        if (employee != null && employee.getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_CREATE.getType(),
                     DataConstant.Notification.PRO_CREATE.getMessage(), employee.getUser().getId());
             server.getRoomOperations(employee.getUser().getId().toString())
@@ -126,13 +150,13 @@ public class ProjectServiceImpl implements ProjectService {
         project.setStatus(status);
         projectRepository.save(project);
 
-        if (employee != null) {
+        if (employee != null && employee.getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_CREATE.getType(),
                     DataConstant.Notification.PRO_CREATE.getMessage(), employee.getUser().getId());
             server.getRoomOperations(employee.getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
-        if (!checkStatus && project.getProjectManager() != null) {
+        if (!checkStatus && project.getProjectManager() != null && project.getProjectManager().getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_UPDATE.getType(),
                     DataConstant.Notification.PRO_UPDATE.getMessage(), project.getProjectManager().getUser().getId());
             server.getRoomOperations(project.getProjectManager().getUser().getId().toString())
@@ -148,7 +172,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Project.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         projectRepository.delete(project);
 
-        if (project.getProjectManager() != null) {
+        if (project.getProjectManager() != null && project.getProjectManager().getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_DELETE.getType(),
                     DataConstant.Notification.PRO_DELETE.getMessage(), project.getProjectManager().getUser().getId());
             server.getRoomOperations(project.getProjectManager().getUser().getId().toString())

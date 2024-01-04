@@ -36,21 +36,38 @@ public class ProjectController {
     @Tag(name = "project-controller")
     @Operation(summary = "API get all project")
     @GetMapping(UrlConstant.Project.GET_ALL)
+    //@PreAuthorize("hasRole('ROLE_LEADER')")
+    public ResponseEntity<?> getAllProject(@RequestParam(required = false) Integer departmentId,
+                                           @RequestParam(required = false) Integer statusId) {
+        return VsResponseUtil.success(projectService.getAll(departmentId, statusId));
+    }
+
+    @Tag(name = "project-controller")
+    @Operation(summary = "API search project")
+    @GetMapping(UrlConstant.Project.SEARCH)
     @PreAuthorize("hasRole('ROLE_LEADER')")
-    public ResponseEntity<?> getAllProject(@RequestParam(required = false) Integer statusId,
+    public ResponseEntity<?> searchProject(@RequestParam(required = false) Integer statusId,
                                            @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
-        return VsResponseUtil.success(projectService.getAll(statusId, paginationFullRequestDto));
+        return VsResponseUtil.success(projectService.search(statusId, paginationFullRequestDto));
     }
 
     @Tag(name = "project-controller")
     @Operation(summary = "API get all my project")
     @GetMapping(UrlConstant.Project.GET_ALL_MY_PROJECT)
-    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
     public ResponseEntity<?> getAllMyProject(@Parameter(name = "principal", hidden = true)
+                                             @CurrentUser UserPrincipal user,
+                                             @RequestParam(required = false) Integer statusId) {
+        return VsResponseUtil.success(projectService.getAllByUserId(user.getId(), statusId));
+    }
+
+    @Tag(name = "project-controller")
+    @Operation(summary = "API search my project")
+    @GetMapping(UrlConstant.Project.SEARCH_MY_PROJECT)
+    public ResponseEntity<?> searchMyProject(@Parameter(name = "principal", hidden = true)
                                              @CurrentUser UserPrincipal user,
                                              @RequestParam(required = false) Integer statusId,
                                              @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
-        return VsResponseUtil.success(projectService.getAllByUserId(user.getId(), statusId, paginationFullRequestDto));
+        return VsResponseUtil.success(projectService.searchByUserId(user.getId(), statusId, paginationFullRequestDto));
     }
 
     @Tag(name = "project-controller")

@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class CodeUtil {
     public static String generateEmployeeCode(int departmentId, int code) {
-        return CommonConstant.COMPANY_CODE + String.format("%02d", departmentId) + String.format("%05d", code);
+        return CommonConstant.COMPANY_CODE + String.format("%02d", departmentId) + String.format("%04d", code);
     }
 
     public static String generateCode(int length) {

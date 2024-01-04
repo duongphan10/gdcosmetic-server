@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,25 +48,41 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public PaginationResponseDto<TaskDto> getAllByProjectId(Integer projectId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.Project.ERR_NOT_FOUND_ID, new String[]{projectId.toString()}));
+    public List<TaskDto> getAll(Integer userId, Integer projectId, Integer statusId, Integer type) {
+        if (projectId != null) {
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Project.ERR_NOT_FOUND_ID, new String[]{projectId.toString()}));
+        }
         if (statusId != null) {
             statusRepository.findById(statusId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
         }
-
-        Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.TASK);
-        Page<Task> taskPage = taskRepository.getAllByProjectId(projectId, paginationFullRequestDto.getKeyword(), statusId, pageable);
-        PagingMeta meta = PaginationUtil
-                .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.TASK, taskPage);
-        List<TaskDto> taskDtos = taskMapper.mapTasksToTaskDtos(taskPage.getContent());
-
-        return new PaginationResponseDto<>(meta, taskDtos);
+        List<Task> tasks = new ArrayList<>();
+        if (type == 0) {
+            tasks = taskRepository.getAll(projectId, statusId);
+        }
+        else {
+            if (type == 1) {
+                tasks = taskRepository.getAllMyCreated(userId, projectId, statusId);
+            }
+        }
+        return taskMapper.mapTasksToTaskDtos(tasks);
     }
 
     @Override
-    public PaginationResponseDto<TaskDto> getAllByEmployeeId(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
+    public List<TaskDto> getByEmployeeId(Integer userId, Integer statusId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
+        if (statusId != null) {
+            statusRepository.findById(statusId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
+        }
+        List<Task> tasks = taskRepository.getByEmployeeId(user.getEmployee().getId(), statusId);
+        return taskMapper.mapTasksToTaskDtos(tasks);
+    }
+
+    @Override
+    public PaginationResponseDto<TaskDto> searchByEmployeeId(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
         if (statusId != null) {
@@ -75,7 +92,7 @@ public class TaskServiceImpl implements TaskService {
 
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.TASK);
         Page<Task> taskPage = taskRepository.
-                getAllByEmployeeId(user.getEmployee().getId(), paginationFullRequestDto.getKeyword(), statusId, pageable);
+                searchByEmployeeId(user.getEmployee().getId(), paginationFullRequestDto.getKeyword(), statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.TASK, taskPage);
         List<TaskDto> taskDtos = taskMapper.mapTasksToTaskDtos(taskPage.getContent());
@@ -87,7 +104,7 @@ public class TaskServiceImpl implements TaskService {
     public TaskDto create(Integer userId, TaskCreateDto taskCreateDto) {
         Project project = projectRepository.findById(taskCreateDto.getProjectId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Project.ERR_NOT_FOUND_ID, new String[]{taskCreateDto.getProjectId().toString()}));
-        if (!userId.equals(project.getProjectManager().getId())) {
+        if (!userId.equals(project.getProjectManager().getUser().getId())) {
             throw new ForbiddenException(ErrorMessage.FORBIDDEN);
         }
         Employee employee = null;
@@ -102,7 +119,7 @@ public class TaskServiceImpl implements TaskService {
         task.setStatus(statusRepository.getById(DataConstant.Status.NEW.getId()));
         taskRepository.save(task);
 
-        if (employee != null) {
+        if (employee != null && employee.getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_CREATE.getType(),
                     DataConstant.Notification.TAS_CREATE.getMessage(), employee.getUser().getId());
             server.getRoomOperations(employee.getUser().getId().toString())
@@ -132,13 +149,13 @@ public class TaskServiceImpl implements TaskService {
         task.setStatus(status);
         taskRepository.save(task);
 
-        if (employee != null) {
+        if (employee != null && employee.getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_CREATE.getType(),
                     DataConstant.Notification.TAS_CREATE.getMessage(), employee.getUser().getId());
             server.getRoomOperations(employee.getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
-        if (!checkStatus && task.getEmployee() != null) {
+        if (!checkStatus && task.getEmployee() != null && task.getEmployee().getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_UPDATE.getType(),
                     DataConstant.Notification.TAS_UPDATE.getMessage(), task.getEmployee().getUser().getId());
             server.getRoomOperations(task.getEmployee().getUser().getId().toString())
@@ -157,7 +174,7 @@ public class TaskServiceImpl implements TaskService {
         }
         taskRepository.delete(task);
 
-        if (task.getEmployee() != null) {
+        if (task.getEmployee() != null && task.getEmployee().getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_DELETE.getType(),
                     DataConstant.Notification.TAS_DELETE.getMessage(), task.getEmployee().getUser().getId());
             server.getRoomOperations(task.getEmployee().getUser().getId().toString())

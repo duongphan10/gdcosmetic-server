@@ -34,22 +34,33 @@ public class TaskController {
     }
 
     @Tag(name = "task-controller")
-    @Operation(summary = "API get all task by project id")
-    @GetMapping(UrlConstant.Task.GET_ALL_BY_PROJECT_ID)
-    public ResponseEntity<?> getAllTaskByProjectId(@PathVariable Integer projectId,
-                                                   @RequestParam(required = false) Integer statusId,
-                                                   @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
-        return VsResponseUtil.success(taskService.getAllByProjectId(projectId, statusId, paginationFullRequestDto));
+    @Operation(summary = "API get all task")
+    @GetMapping(UrlConstant.Task.GET_ALL)
+    public ResponseEntity<?> getAllTask(@Parameter(name = "principal", hidden = true)
+                                        @CurrentUser UserPrincipal user,
+                                        @RequestParam(required = false) Integer projectId,
+                                        @RequestParam(required = false) Integer statusId,
+                                        @RequestParam(required = false, defaultValue = "0") Integer type) {
+        return VsResponseUtil.success(taskService.getAll(user.getId(), projectId, statusId, type));
     }
 
     @Tag(name = "task-controller")
-    @Operation(summary = "API get all my task")
-    @GetMapping(UrlConstant.Task.GET_ALL_MY_TASK)
-    public ResponseEntity<?> getAllMyTask(@Parameter(name = "principal", hidden = true)
+    @Operation(summary = "API get my task")
+    @GetMapping(UrlConstant.Task.GET_MY_TASK)
+    public ResponseEntity<?> getMyTask(@Parameter(name = "principal", hidden = true)
+                                       @CurrentUser UserPrincipal user,
+                                       @RequestParam(required = false) Integer statusId) {
+        return VsResponseUtil.success(taskService.getByEmployeeId(user.getId(), statusId));
+    }
+
+    @Tag(name = "task-controller")
+    @Operation(summary = "API search my task")
+    @GetMapping(UrlConstant.Task.SEARCH_MY_TASK)
+    public ResponseEntity<?> searchMyTask(@Parameter(name = "principal", hidden = true)
                                           @CurrentUser UserPrincipal user,
                                           @RequestParam(required = false) Integer statusId,
                                           @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
-        return VsResponseUtil.success(taskService.getAllByEmployeeId(user.getId(), statusId, paginationFullRequestDto));
+        return VsResponseUtil.success(taskService.searchByEmployeeId(user.getId(), statusId, paginationFullRequestDto));
     }
 
     @Tag(name = "task-controller")

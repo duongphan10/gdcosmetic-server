@@ -40,7 +40,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "INNER JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 IS NULL OR p.department_id = ?1) " +
-            "   AND (?2 IS NULL OR u.enabled = ?2)", nativeQuery = true)
+            "   AND (?2 IS NULL OR u.enabled = ?2) " +
+            "ORDER BY u.created_date DESC ", nativeQuery = true)
     List<User> getAll(Integer departmentId, Boolean enabled);
 
     @Query(value = "SELECT u.* FROM users u " +

@@ -15,6 +15,7 @@ import com.vn.em.domain.entity.Recognition;
 import com.vn.em.domain.entity.Status;
 import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.RecognitionMapper;
+import com.vn.em.exception.ForbiddenException;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.*;
 import com.vn.em.service.NotificationService;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -49,7 +51,21 @@ public class RecognitionServiceImpl implements RecognitionService {
     }
 
     @Override
-    public PaginationResponseDto<RecognitionDto> getAll(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
+    public List<RecognitionDto> getAll(Integer departmentId, Integer statusId, Boolean type) {
+        if (departmentId != null) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        if (statusId != null) {
+            statusRepository.findById(statusId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
+        }
+        List<Recognition> recognitions = recognitionRepository.getAll(departmentId, statusId, type);
+        return recognitionMapper.mapRecognitionsToRecognitionDtos(recognitions);
+    }
+
+    @Override
+    public PaginationResponseDto<RecognitionDto> search(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
         if (departmentId != null) {
             departmentRepository.findById(departmentId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
@@ -61,7 +77,7 @@ public class RecognitionServiceImpl implements RecognitionService {
 
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.RECOGNITION);
 
-        Page<Recognition> recognitionPage = recognitionRepository.getAll(paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
+        Page<Recognition> recognitionPage = recognitionRepository.search(paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.RECOGNITION, recognitionPage);
         List<RecognitionDto> recognitionDtos = recognitionMapper.mapRecognitionsToRecognitionDtos(recognitionPage.getContent());
@@ -70,9 +86,21 @@ public class RecognitionServiceImpl implements RecognitionService {
     }
 
     @Override
-    public PaginationResponseDto<RecognitionDto> getAllMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
+    public List<RecognitionDto> getMyCreate(Integer userId, Integer departmentId, Integer statusId, Boolean type) {
+        if (departmentId != null) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        if (statusId != null) {
+            statusRepository.findById(statusId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
+        }
+        List<Recognition> recognitions = recognitionRepository.getMyCreate(userId, departmentId, statusId, type);
+        return recognitionMapper.mapRecognitionsToRecognitionDtos(recognitions);
+    }
+
+    @Override
+    public PaginationResponseDto<RecognitionDto> searchMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
         if (departmentId != null) {
             departmentRepository.findById(departmentId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
@@ -83,7 +111,7 @@ public class RecognitionServiceImpl implements RecognitionService {
         }
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.RECOGNITION);
 
-        Page<Recognition> recognitionPage = recognitionRepository.getAllMyCreate(userId, paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
+        Page<Recognition> recognitionPage = recognitionRepository.searchMyCreate(userId, paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.RECOGNITION, recognitionPage);
         List<RecognitionDto> recognitionDtos = recognitionMapper.mapRecognitionsToRecognitionDtos(recognitionPage.getContent());
@@ -115,10 +143,13 @@ public class RecognitionServiceImpl implements RecognitionService {
     public RecognitionDto updateById(Integer id, RecognitionUpdateDto recognitionUpdateDto) {
         Recognition recognition = recognitionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Recognition.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
+        if (!recognition.getStatus().getId().equals(DataConstant.Status.PENDING.getId())) {
+            throw new ForbiddenException(ErrorMessage.FORBIDDEN_UPDATE_DELETE);
+        }
         Status status = statusRepository.findById(recognitionUpdateDto.getStatusId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{recognitionUpdateDto.getStatusId().toString()}));
         recognitionMapper.update(recognition, recognitionUpdateDto);
-        recognition.setDate(LocalDate.now());
+        recognition.setDate(LocalDateTime.now());
         recognition.setStatus(status);
         recognitionRepository.save(recognition);
 
@@ -137,9 +168,13 @@ public class RecognitionServiceImpl implements RecognitionService {
     }
 
     @Override
-    public CommonResponseDto deleteById(Integer id) {
+    public CommonResponseDto deleteById(Integer id, Integer userId) {
         Recognition recognition = recognitionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Recognition.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
+        if (!recognition.getStatus().getId().equals(DataConstant.Status.PENDING.getId())
+                || !recognition.getCreatedBy().equals(userId)) {
+            throw new ForbiddenException(ErrorMessage.FORBIDDEN_UPDATE_DELETE);
+        }
         recognitionRepository.delete(recognition);
         return new CommonResponseDto(true, MessageConstant.DELETE_RECOGNITION_SUCCESSFULLY);
     }

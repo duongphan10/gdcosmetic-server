@@ -29,7 +29,7 @@ public class DataConstant {
         REJECTED(8, "Rejected"),
         NEW(9, "New"),
         PROCESSING(10, "Processing"),
-        PAUSED(11, "Paused "),
+        PAUSED(11, "Paused"),
         COMPLETED(12, "Completed"),
         CANCELED(13, "Canceled");
         private final int id;

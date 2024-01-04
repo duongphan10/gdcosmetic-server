@@ -21,6 +21,9 @@ public class UserDto extends DateAuditingDto {
     private String fullName;
     private Boolean gender;
     private LocalDate birthday;
+    private String country;
+    private String address;
+    private String phone;
     private String email;
     private String departmentName;
     private String positionName;

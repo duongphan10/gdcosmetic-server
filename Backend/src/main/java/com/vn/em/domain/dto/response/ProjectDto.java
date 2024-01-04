@@ -26,6 +26,10 @@ public class ProjectDto extends UserDateAuditingDto {
     private LocalDate timelineEnd;
     private String note;
     private Integer projectManagerId;
+    private String projectManagerCode;
+    private String projectManagerFullName;
+    private String projectManagerDepartmentId;
+    private String projectManagerDepartment;
     private Integer statusId;
     private String statusName;
 

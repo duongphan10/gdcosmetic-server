@@ -15,6 +15,7 @@ import com.vn.em.domain.entity.SalaryAdjustment;
 import com.vn.em.domain.entity.Status;
 import com.vn.em.domain.entity.User;
 import com.vn.em.domain.mapper.SalaryAdjustmentMapper;
+import com.vn.em.exception.ForbiddenException;
 import com.vn.em.exception.NotFoundException;
 import com.vn.em.repository.*;
 import com.vn.em.service.NotificationService;
@@ -49,7 +50,21 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
     }
 
     @Override
-    public PaginationResponseDto<SalaryAdjustmentDto> getAll(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
+    public List<SalaryAdjustmentDto> getAll(Integer departmentId, Integer statusId) {
+        if (departmentId != null) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        if (statusId != null) {
+            statusRepository.findById(statusId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
+        }
+        List<SalaryAdjustment> salaryAdjustments = salaryAdjustmentRepository.getAll(departmentId, statusId);
+        return salaryAdjustmentMapper.mapSalaryAdjustmentsToSalaryAdjustmentDtos(salaryAdjustments);
+    }
+
+    @Override
+    public PaginationResponseDto<SalaryAdjustmentDto> search(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
         if (departmentId != null) {
             departmentRepository.findById(departmentId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
@@ -61,7 +76,7 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
 
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.SALARY_ADJUSTMENT);
 
-        Page<SalaryAdjustment> salaryAdjustmentPage = salaryAdjustmentRepository.getAll(paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
+        Page<SalaryAdjustment> salaryAdjustmentPage = salaryAdjustmentRepository.search(paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.SALARY_ADJUSTMENT, salaryAdjustmentPage);
         List<SalaryAdjustmentDto> salaryAdjustmentDtos = salaryAdjustmentMapper.mapSalaryAdjustmentsToSalaryAdjustmentDtos(salaryAdjustmentPage.getContent());
@@ -70,9 +85,17 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
     }
 
     @Override
-    public PaginationResponseDto<SalaryAdjustmentDto> getAllMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
+    public List<SalaryAdjustmentDto> getAllMyCreate(Integer userId, Integer statusId) {
+        if (statusId != null) {
+            statusRepository.findById(statusId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
+        }
+        List<SalaryAdjustment> salaryAdjustments = salaryAdjustmentRepository.getAllMyCreate(userId, statusId);
+        return salaryAdjustmentMapper.mapSalaryAdjustmentsToSalaryAdjustmentDtos(salaryAdjustments);
+    }
+
+    @Override
+    public PaginationResponseDto<SalaryAdjustmentDto> searchMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto) {
         if (statusId != null) {
             statusRepository.findById(statusId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{statusId.toString()}));
@@ -83,7 +106,7 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
         }
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.SALARY_ADJUSTMENT);
 
-        Page<SalaryAdjustment> salaryAdjustmentPage = salaryAdjustmentRepository.getAllMyCreate(userId, paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
+        Page<SalaryAdjustment> salaryAdjustmentPage = salaryAdjustmentRepository.searchMyCreate(userId, paginationFullRequestDto.getKeyword(), departmentId, statusId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.SALARY_ADJUSTMENT, salaryAdjustmentPage);
         List<SalaryAdjustmentDto> salaryAdjustmentDtos = salaryAdjustmentMapper.mapSalaryAdjustmentsToSalaryAdjustmentDtos(salaryAdjustmentPage.getContent());
@@ -96,6 +119,7 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
         Employee employee = employeeRepository.findById(salaryAdjustmentCreateDto.getEmployeeId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND_ID, new String[]{salaryAdjustmentCreateDto.getEmployeeId().toString()}));
         SalaryAdjustment salaryAdjustment = salaryAdjustmentMapper.mapSalaryAdjustmentCreateDtoToSalaryAdjustment(salaryAdjustmentCreateDto);
+        salaryAdjustment.setOldSalary(employee.getSalary());
         salaryAdjustment.setEmployee(employee);
         salaryAdjustment.setStatus(statusRepository.getById(DataConstant.Status.PENDING.getId()));
         salaryAdjustmentRepository.save(salaryAdjustment);
@@ -116,6 +140,9 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
     public SalaryAdjustmentDto updateById(Integer id, SalaryAdjustmentUpdateDto salaryAdjustmentUpdateDto) {
         SalaryAdjustment salaryAdjustment = salaryAdjustmentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.SalaryAdjustment.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
+        if (!salaryAdjustment.getStatus().getId().equals(DataConstant.Status.PENDING.getId())) {
+            throw new ForbiddenException(ErrorMessage.FORBIDDEN_UPDATE_DELETE);
+        }
         Status status = statusRepository.findById(salaryAdjustmentUpdateDto.getStatusId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Status.ERR_NOT_FOUND_ID, new String[]{salaryAdjustmentUpdateDto.getStatusId().toString()}));
         salaryAdjustmentMapper.update(salaryAdjustment, salaryAdjustmentUpdateDto);
@@ -126,10 +153,12 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
         if (status.getId() == DataConstant.Status.APPROVED.getId()) {
             employeeRepository.updateNewSalary(salaryAdjustment.getEmployee().getId(), salaryAdjustment.getNewSalary());
 
-            notificationDto = notificationService.create(DataConstant.Notification.SAL_UPDATE.getType(),
-                    DataConstant.Notification.SAL_UPDATE.getMessage(), salaryAdjustment.getEmployee().getUser());
-            server.getRoomOperations(salaryAdjustment.getEmployee().getUser().getId().toString())
-                    .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+            if (salaryAdjustment.getEmployee().getUser() != null) {
+                notificationDto = notificationService.create(DataConstant.Notification.SAL_UPDATE.getType(),
+                        DataConstant.Notification.SAL_UPDATE.getMessage(), salaryAdjustment.getEmployee().getUser());
+                server.getRoomOperations(salaryAdjustment.getEmployee().getUser().getId().toString())
+                        .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
+            }
 
             notificationDto = notificationService.create(DataConstant.Notification.SAL_APPROVED.getType(),
                     DataConstant.Notification.SAL_APPROVED.getMessage(), salaryAdjustment.getCreatedBy());
@@ -145,9 +174,13 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
     }
 
     @Override
-    public CommonResponseDto deleteById(Integer id) {
+    public CommonResponseDto deleteById(Integer id, Integer userId) {
         SalaryAdjustment salaryAdjustment = salaryAdjustmentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.SalaryAdjustment.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
+        if (!salaryAdjustment.getStatus().getId().equals(DataConstant.Status.PENDING.getId())
+                || !salaryAdjustment.getCreatedBy().equals(userId)) {
+            throw new ForbiddenException(ErrorMessage.FORBIDDEN_UPDATE_DELETE);
+        }
         salaryAdjustmentRepository.delete(salaryAdjustment);
         return new CommonResponseDto(true, MessageConstant.DELETE_SALARY_ADJUSTMENT_SUCCESSFULLY);
     }

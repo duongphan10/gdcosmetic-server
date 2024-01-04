@@ -18,8 +18,6 @@ public class RecognitionCreateDto {
     private Boolean type;
     @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
     private String reason;
-    @NotBlank(message = ErrorMessage.NOT_BLANK_FIELD)
-    private String description;
     private Long amount;
     @NotNull(message = ErrorMessage.INVALID_SOME_THING_FIELD_IS_REQUIRED)
     private Integer employeeId;

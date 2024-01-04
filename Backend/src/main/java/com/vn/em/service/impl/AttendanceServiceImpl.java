@@ -47,7 +47,17 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public PaginationResponseDto<AttendanceDto> getAll(Integer year, Integer month, Integer departmentId, PaginationFullRequestDto paginationFullRequestDto) {
+    public List<AttendanceDto> getAll(Integer year, Integer month, Integer departmentId) {
+        if (departmentId != null) {
+            departmentRepository.findById(departmentId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
+        }
+        List<Attendance> attendances = attendanceRepository.getAll(year, month, departmentId);
+        return attendanceMapper.mapAttendancesToAttendanceDtos(attendances);
+    }
+
+    @Override
+    public PaginationResponseDto<AttendanceDto> search(Integer year, Integer month, Integer departmentId, PaginationFullRequestDto paginationFullRequestDto) {
         if (departmentId != null) {
             departmentRepository.findById(departmentId)
                     .orElseThrow(() -> new NotFoundException(ErrorMessage.Department.ERR_NOT_FOUND_ID, new String[]{departmentId.toString()}));
@@ -55,7 +65,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         Pageable pageable = PaginationUtil.buildPageable(paginationFullRequestDto, SortByDataConstant.ATTENDANCE);
 
-        Page<Attendance> attendancePage = attendanceRepository.getAll(paginationFullRequestDto.getKeyword(), year, month, departmentId, pageable);
+        Page<Attendance> attendancePage = attendanceRepository.search(paginationFullRequestDto.getKeyword(), year, month, departmentId, pageable);
         PagingMeta meta = PaginationUtil
                 .buildPagingMeta(paginationFullRequestDto, SortByDataConstant.ATTENDANCE, attendancePage);
         List<AttendanceDto> attendanceDtos = attendanceMapper.mapAttendancesToAttendanceDtos(attendancePage.getContent());

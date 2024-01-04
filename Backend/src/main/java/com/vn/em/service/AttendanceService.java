@@ -13,7 +13,9 @@ public interface AttendanceService {
 
     AttendanceDto getById(Integer id);
 
-    PaginationResponseDto<AttendanceDto> getAll(Integer year, Integer month, Integer departmentId, PaginationFullRequestDto paginationFullRequestDto);
+    List<AttendanceDto> getAll(Integer year, Integer month, Integer departmentId);
+
+    PaginationResponseDto<AttendanceDto> search(Integer year, Integer month, Integer departmentId, PaginationFullRequestDto paginationFullRequestDto);
 
     List<AttendanceDto> create(AttendanceCreateDto attendanceCreateDto);
 

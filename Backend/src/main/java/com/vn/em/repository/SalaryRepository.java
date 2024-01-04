@@ -17,6 +17,15 @@ public interface SalaryRepository extends JpaRepository<Salary, Integer> {
             "WHERE a.year = ?1 AND a.month = ?2", nativeQuery = true)
     int countByYearAndMonth(Integer year, Integer month);
 
+    @Query(value = "SELECT s.* FROM salaries s " +
+            "INNER JOIN attendances a ON s.attendance_id = a.id " +
+            "INNER JOIN employees e ON a.employee_id = e.id " +
+            "INNER JOIN positions p ON e.position_id = p.id " +
+            "WHERE " +
+            "   (?1 IS NULL OR a.year = ?1) " +
+            "   AND (?2 IS NULL OR a.month = ?2) " +
+            "   AND (?3 IS NULL OR p.department_id = ?3) ", nativeQuery = true)
+    List<Salary> getAll(Integer year, Integer month, Integer departmentId);
 
     @Query(value = "SELECT s.* FROM salaries s " +
             "INNER JOIN attendances a ON s.attendance_id = a.id " +
@@ -30,7 +39,7 @@ public interface SalaryRepository extends JpaRepository<Salary, Integer> {
             "   AND (?2 IS NULL OR a.year = ?2) " +
             "   AND (?3 IS NULL OR a.month = ?3) " +
             "   AND (?4 IS NULL OR p.department_id = ?4)", nativeQuery = true)
-    Page<Salary> getAll(String keyword, Integer year, Integer month, Integer departmentId, Pageable pageable);
+    Page<Salary> search(String keyword, Integer year, Integer month, Integer departmentId, Pageable pageable);
 
     @Query(value = "SELECT s.* FROM salaries s " +
             "INNER JOIN attendances a ON s.attendance_id = a.id " +

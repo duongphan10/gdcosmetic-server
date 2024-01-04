@@ -12,6 +12,9 @@ public interface AttendanceMapper {
 
     @Mappings({
             @Mapping(target = "employeeId", source = "employee.id"),
+            @Mapping(target = "employeeCode", source = "employee.employeeCode"),
+            @Mapping(target = "fullName", source = "employee.fullName"),
+            @Mapping(target = "departmentName", source = "employee.position.department.name"),
     })
     AttendanceDto mapAttendanceToAttendanceDto(Attendance attendance);
 

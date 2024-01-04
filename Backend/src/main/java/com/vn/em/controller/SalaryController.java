@@ -32,12 +32,22 @@ public class SalaryController {
     @Tag(name = "salary-controller")
     @Operation(summary = "API get all salary")
     @GetMapping(UrlConstant.Salary.GET_ALL)
-    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
+    //@PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
     public ResponseEntity<?> getAllSalary(@RequestParam(name = "year", required = false) Integer year,
+                                          @RequestParam(name = "month", required = false) Integer month,
+                                          @RequestParam(name = "departmentId", required = false) Integer departmentId) {
+        return VsResponseUtil.success(salaryService.getAll(year, month, departmentId));
+    }
+
+    @Tag(name = "salary-controller")
+    @Operation(summary = "API search salary")
+    @GetMapping(UrlConstant.Salary.SEARCH)
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
+    public ResponseEntity<?> searchSalary(@RequestParam(name = "year", required = false) Integer year,
                                           @RequestParam(name = "month", required = false) Integer month,
                                           @RequestParam(name = "departmentId", required = false) Integer departmentId,
                                           @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
-        return VsResponseUtil.success(salaryService.getAll(year, month, departmentId, paginationFullRequestDto));
+        return VsResponseUtil.success(salaryService.search(year, month, departmentId, paginationFullRequestDto));
     }
 
     @Tag(name = "salary-controller")

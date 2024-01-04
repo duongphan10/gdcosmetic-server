@@ -22,6 +22,10 @@ public interface ProjectMapper {
 
     @Mappings({
             @Mapping(target = "projectManagerId", source = "projectManager.id"),
+            @Mapping(target = "projectManagerCode", source = "projectManager.employeeCode"),
+            @Mapping(target = "projectManagerFullName", source = "projectManager.fullName"),
+            @Mapping(target = "projectManagerDepartmentId", source = "projectManager.position.department.id"),
+            @Mapping(target = "projectManagerDepartment", source = "projectManager.position.department.name"),
             @Mapping(target = "statusId", source = "status.id"),
             @Mapping(target = "statusName", source = "status.name"),
     })

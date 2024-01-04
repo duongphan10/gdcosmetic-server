@@ -18,6 +18,15 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             "INNER JOIN employees e ON a.employee_id = e.id " +
             "INNER JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
+            "   (?1 IS NULL OR a.year = ?1) " +
+            "   AND (?2 IS NULL OR a.month = ?2) " +
+            "   AND (?3 IS NULL OR p.department_id = ?3)", nativeQuery = true)
+    List<Attendance> getAll(Integer year, Integer month, Integer departmentId);
+
+    @Query(value = "SELECT a.* FROM attendances a " +
+            "INNER JOIN employees e ON a.employee_id = e.id " +
+            "INNER JOIN positions p ON e.position_id = p.id " +
+            "WHERE " +
             "   (?1 = '' OR (LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "                   OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "                   OR LOWER(p.name) LIKE LOWER(CONCAT('%', ?1, '%'))) " +
@@ -25,7 +34,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             "   AND (?2 IS NULL OR a.year = ?2) " +
             "   AND (?3 IS NULL OR a.month = ?3) " +
             "   AND (?4 IS NULL OR p.department_id = ?4)", nativeQuery = true)
-    Page<Attendance> getAll(String keyword, Integer year, Integer month, Integer departmentId, Pageable pageable);
+    Page<Attendance> search(String keyword, Integer year, Integer month, Integer departmentId, Pageable pageable);
 
     List<Attendance> findAllByYearAndMonth(Integer year, Integer month);
 

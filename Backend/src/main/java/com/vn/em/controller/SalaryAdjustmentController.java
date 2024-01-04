@@ -36,23 +36,39 @@ public class SalaryAdjustmentController {
     @Tag(name = "salary-adjustment-controller")
     @Operation(summary = "API get all salary adjustment")
     @GetMapping(UrlConstant.SalaryAdjustment.GET_ALL)
-    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> getAllSalaryAdjustment(@RequestParam(name = "departmentId", required = false) Integer departmentId,
+                                                    @RequestParam(name = "statusId", required = false) Integer statusId) {
+        return VsResponseUtil.success(salaryAdjustmentService.getAll(departmentId, statusId));
+    }
+
+    @Tag(name = "salary-adjustment-controller")
+    @Operation(summary = "API search salary adjustment")
+    @GetMapping(UrlConstant.SalaryAdjustment.SEARCH)
+    @PreAuthorize("hasRole('ROLE_LEADER')")
+    public ResponseEntity<?> searchSalaryAdjustment(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                                     @RequestParam(name = "statusId", required = false) Integer statusId,
                                                     @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
-        return VsResponseUtil.success(salaryAdjustmentService.getAll(departmentId, statusId, paginationFullRequestDto));
+        return VsResponseUtil.success(salaryAdjustmentService.search(departmentId, statusId, paginationFullRequestDto));
     }
 
     @Tag(name = "salary-adjustment-controller")
     @Operation(summary = "API get all my salary adjustment create")
-    @GetMapping(UrlConstant.SalaryAdjustment.GET_ALL_BY_USER_CREATE)
-    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
-    public ResponseEntity<?> getAllMySalaryAdjustmentCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
+    @GetMapping(UrlConstant.SalaryAdjustment.GET_MY_CREATE)
+    public ResponseEntity<?> getAllMySalaryAdjustmentCreate(@RequestParam(name = "statusId", required = false) Integer statusId,
+                                                            @Parameter(name = "principal", hidden = true)
+                                                            @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(salaryAdjustmentService.getAllMyCreate(user.getId(), statusId));
+    }
+
+    @Tag(name = "salary-adjustment-controller")
+    @Operation(summary = "API search my salary adjustment create")
+    @GetMapping(UrlConstant.SalaryAdjustment.SEARCH_MY_CREATE)
+    public ResponseEntity<?> searchMySalaryAdjustmentCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                                             @RequestParam(name = "statusId", required = false) Integer statusId,
                                                             @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto,
                                                             @Parameter(name = "principal", hidden = true)
                                                             @CurrentUser UserPrincipal user) {
-        return VsResponseUtil.success(salaryAdjustmentService.getAllMyCreate(user.getId(), departmentId, statusId, paginationFullRequestDto));
+        return VsResponseUtil.success(salaryAdjustmentService.searchMyCreate(user.getId(), departmentId, statusId, paginationFullRequestDto));
     }
 
     @Tag(name = "salary-adjustment-controller")
@@ -75,9 +91,11 @@ public class SalaryAdjustmentController {
     @Tag(name = "salary-adjustment-controller")
     @Operation(summary = "API delete salary adjustment by id")
     @DeleteMapping(UrlConstant.SalaryAdjustment.DELETE)
-    @PreAuthorize("hasRole('ROLE_LEADER')")
-    public ResponseEntity<?> deleteSalaryAdjustmentById(@PathVariable Integer id) {
-        return VsResponseUtil.success(salaryAdjustmentService.deleteById(id));
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
+    public ResponseEntity<?> deleteSalaryAdjustmentById(@PathVariable Integer id,
+                                                        @Parameter(name = "principal", hidden = true)
+                                                        @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(salaryAdjustmentService.deleteById(id, user.getId()));
     }
 
 

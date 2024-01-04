@@ -12,7 +12,9 @@ public interface SalaryService {
 
     SalaryDto getById(Integer id);
 
-    PaginationResponseDto<SalaryDto> getAll(Integer year, Integer month, Integer departmentId, PaginationFullRequestDto paginationFullRequestDto);
+    List<SalaryDto> getAll(Integer year, Integer month, Integer departmentId);
+
+    PaginationResponseDto<SalaryDto> search(Integer year, Integer month, Integer departmentId, PaginationFullRequestDto paginationFullRequestDto);
 
     List<SalaryDto> create(SalaryRequestDto salaryRequestDto);
 

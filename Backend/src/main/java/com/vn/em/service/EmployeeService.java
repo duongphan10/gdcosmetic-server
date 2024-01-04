@@ -18,6 +18,8 @@ public interface EmployeeService {
 
     List<EmployeeDto> getAll(Integer departmentId, Integer statusId);
 
+    List<EmployeeDto> getAllByRole(Integer departmentId, Integer roleId);
+
     PaginationResponseDto<EmployeeDto> search(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
 
     EmployeeDto create(EmployeeCreateDto employeeCreateDto);

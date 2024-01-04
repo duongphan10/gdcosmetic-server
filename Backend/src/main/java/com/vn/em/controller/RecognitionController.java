@@ -36,23 +36,41 @@ public class RecognitionController {
     @Tag(name = "recognition-controller")
     @Operation(summary = "API get all recognition")
     @GetMapping(UrlConstant.Recognition.GET_ALL)
-    @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> getAllRecognition(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                                @RequestParam(name = "statusId", required = false) Integer statusId,
-                                               @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
-        return VsResponseUtil.success(recognitionService.getAll(departmentId, statusId, paginationFullRequestDto));
+                                               @RequestParam(name = "type", required = false) Boolean type) {
+        return VsResponseUtil.success(recognitionService.getAll(departmentId, statusId, type));
     }
 
     @Tag(name = "recognition-controller")
-    @Operation(summary = "API get all my recognition create")
-    @GetMapping(UrlConstant.Recognition.GET_ALL_BY_USER_CREATE)
-    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
-    public ResponseEntity<?> getAllMyRecognitionCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
+    @Operation(summary = "API search recognition")
+    @GetMapping(UrlConstant.Recognition.SEARCH)
+    public ResponseEntity<?> searchRecognition(@RequestParam(name = "departmentId", required = false) Integer departmentId,
+                                               @RequestParam(name = "statusId", required = false) Integer statusId,
+                                               @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto) {
+        return VsResponseUtil.success(recognitionService.search(departmentId, statusId, paginationFullRequestDto));
+    }
+
+    @Tag(name = "recognition-controller")
+    @Operation(summary = "API get my recognition create")
+    @GetMapping(UrlConstant.Recognition.GET_MY_CREATE)
+    public ResponseEntity<?> getMyRecognitionCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
+                                                       @RequestParam(name = "statusId", required = false) Integer statusId,
+                                                    @RequestParam(name = "type", required = false) Boolean type,
+                                                       @Parameter(name = "principal", hidden = true)
+                                                       @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(recognitionService.getMyCreate(user.getId(), departmentId, statusId, type));
+    }
+
+    @Tag(name = "recognition-controller")
+    @Operation(summary = "API search my recognition create")
+    @GetMapping(UrlConstant.Recognition.SEARCH_MY_CREATE)
+    public ResponseEntity<?> searchRecognitionCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
                                                        @RequestParam(name = "statusId", required = false) Integer statusId,
                                                        @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto,
                                                        @Parameter(name = "principal", hidden = true)
                                                        @CurrentUser UserPrincipal user) {
-        return VsResponseUtil.success(recognitionService.getAllMyCreate(user.getId(), departmentId, statusId, paginationFullRequestDto));
+        return VsResponseUtil.success(recognitionService.searchMyCreate(user.getId(), departmentId, statusId, paginationFullRequestDto));
     }
 
     @Tag(name = "recognition-controller")
@@ -75,9 +93,11 @@ public class RecognitionController {
     @Tag(name = "recognition-controller")
     @Operation(summary = "API delete recognition by id")
     @DeleteMapping(UrlConstant.Recognition.DELETE)
-    @PreAuthorize("hasRole('ROLE_LEADER')")
-    public ResponseEntity<?> deleteRecognitionById(@PathVariable Integer id) {
-        return VsResponseUtil.success(recognitionService.deleteById(id));
+    @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
+    public ResponseEntity<?> deleteRecognitionById(@PathVariable Integer id,
+                                                   @Parameter(name = "principal", hidden = true)
+                                                   @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(recognitionService.deleteById(id, user.getId()));
     }
 
 

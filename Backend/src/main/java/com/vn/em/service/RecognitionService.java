@@ -7,17 +7,23 @@ import com.vn.em.domain.dto.request.RecognitionUpdateDto;
 import com.vn.em.domain.dto.response.CommonResponseDto;
 import com.vn.em.domain.dto.response.RecognitionDto;
 
+import java.util.List;
+
 public interface RecognitionService {
 
     RecognitionDto getById(Integer id);
 
-    PaginationResponseDto<RecognitionDto> getAll(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
+    List<RecognitionDto> getAll(Integer departmentId, Integer statusId, Boolean type);
 
-    PaginationResponseDto<RecognitionDto> getAllMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
+    PaginationResponseDto<RecognitionDto> search(Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
+
+    List<RecognitionDto> getMyCreate(Integer userId, Integer departmentId, Integer statusId, Boolean type);
+
+    PaginationResponseDto<RecognitionDto> searchMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
 
     RecognitionDto create(RecognitionCreateDto recognitionCreateDto);
 
     RecognitionDto updateById(Integer id, RecognitionUpdateDto recognitionUpdateDto);
 
-    CommonResponseDto deleteById(Integer id);
+    CommonResponseDto deleteById(Integer id, Integer userId);
 }

@@ -14,6 +14,12 @@ public interface SalaryMapper {
 
     @Mappings({
             @Mapping(target = "attendanceId", source = "attendance.id"),
+            @Mapping(target = "year", source = "attendance.year"),
+            @Mapping(target = "month", source = "attendance.month"),
+            @Mapping(target = "employeeCode", source = "attendance.employee.employeeCode"),
+            @Mapping(target = "fullName", source = "attendance.employee.fullName"),
+            @Mapping(target = "departmentName", source = "attendance.employee.position.department.name"),
+            @Mapping(target = "salary", source = "attendance.employee.salary"),
     })
     SalaryDto mapSalaryToSalaryDto(Salary salary);
 
