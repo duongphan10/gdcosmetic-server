@@ -36,8 +36,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> getAllByRole(Role role);
 
     @Query(value = "SELECT u.* FROM users u " +
-            "INNER JOIN employees e ON u.employee_id = e.id " +
-            "INNER JOIN positions p ON e.position_id = p.id " +
+            "LEFT JOIN employees e ON u.employee_id = e.id " +
+            "LEFT JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 IS NULL OR p.department_id = ?1) " +
             "   AND (?2 IS NULL OR u.enabled = ?2) " +
@@ -45,8 +45,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> getAll(Integer departmentId, Boolean enabled);
 
     @Query(value = "SELECT u.* FROM users u " +
-            "INNER JOIN employees e ON u.employee_id = e.id " +
-            "INNER JOIN positions p ON e.position_id = p.id " +
+            "LEFT JOIN employees e ON u.employee_id = e.id " +
+            "LEFT JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 = '' OR (LOWER(u.username) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "               OR LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?1, '%')) " +
@@ -57,21 +57,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "   AND (?3 IS NULL OR u.enabled = ?3)", nativeQuery = true)
     Page<User> search(String keyword, Integer departmentId, Boolean enabled, Pageable pageable);
 
-    @Query(value = "SELECT " +
-            "   u.* " +
-            "FROM " +
-            "   users u " +
-            "        INNER JOIN " +
-            "   employees e ON u.employee_id = e.id " +
+    @Query(value = "SELECT u.* FROM users u " +
+            "LEFT JOIN employees e ON u.employee_id = e.id " +
             "WHERE " +
-            "   u.id NOT IN (SELECT " +
-            "            u.id " +
-            "        FROM " +
-            "            users u " +
-            "                INNER JOIN " +
-            "            user_rooms ur ON u.id = ur.user_id " +
+            "   u.id NOT IN (" +
+            "       SELECT u.id FROM users u " +
+            "       INNER JOIN user_rooms ur ON u.id = ur.user_id " +
             "        WHERE " +
-            "            ur.room_id = ?2) " +
+            "            ur.room_id = ?2" +
+            "   ) " +
             "   AND u.enabled = 1 " +
             "   AND (?1 = '' OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', ?1, '%'))) ", nativeQuery = true)
     Page<User> searchOtherUser(String keyword, Integer roomId, Pageable pageable);

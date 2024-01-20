@@ -15,8 +15,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     boolean existsByYearAndMonth(Integer year, Integer month);
 
     @Query(value = "SELECT a.* FROM attendances a " +
-            "INNER JOIN employees e ON a.employee_id = e.id " +
-            "INNER JOIN positions p ON e.position_id = p.id " +
+            "LEFT JOIN employees e ON a.employee_id = e.id " +
+            "LEFT JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 IS NULL OR a.year = ?1) " +
             "   AND (?2 IS NULL OR a.month = ?2) " +
@@ -24,8 +24,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     List<Attendance> getAll(Integer year, Integer month, Integer departmentId);
 
     @Query(value = "SELECT a.* FROM attendances a " +
-            "INNER JOIN employees e ON a.employee_id = e.id " +
-            "INNER JOIN positions p ON e.position_id = p.id " +
+            "LEFT JOIN employees e ON a.employee_id = e.id " +
+            "LEFT JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 = '' OR (LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "                   OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', ?1, '%')) " +

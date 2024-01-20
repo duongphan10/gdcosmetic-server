@@ -35,7 +35,7 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
     List<Project> getAllByEmployeeId(Integer employeeId, Integer statusId);
 
     @Query(value = "SELECT p.* FROM projects p " +
-            "INNER JOIN tasks t ON p.id = t.project_id " +
+            "LEFT JOIN tasks t ON p.id = t.project_id " +
             "WHERE " +
             "   (p.project_manager_id = ?1 OR t.employee_id = ?1) " +
             "   AND (?2 = '' OR LOWER(p.name) LIKE LOWER(CONCAT('%', ?2, '%'))) " +

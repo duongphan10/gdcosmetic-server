@@ -13,8 +13,8 @@ import java.util.List;
 public interface SalaryAdjustmentRepository extends JpaRepository<SalaryAdjustment, Integer> {
 
     @Query(value = "SELECT s.* FROM salary_adjustments s " +
-            "INNER JOIN employees e  ON s.employee_id = e.id " +
-            "INNER JOIN positions p ON e.position_id = p.id " +
+            "LEFT JOIN employees e  ON s.employee_id = e.id " +
+            "LEFT JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 IS NULL OR p.department_id = ?1) " +
             "   AND (?2 IS NULL OR s.status_id = ?2) " +
@@ -22,8 +22,8 @@ public interface SalaryAdjustmentRepository extends JpaRepository<SalaryAdjustme
     List<SalaryAdjustment> getAll(Integer departmentId, Integer statusId);
 
     @Query(value = "SELECT s.* FROM salary_adjustments s " +
-            "INNER JOIN employees e  ON s.employee_id = e.id " +
-            "INNER JOIN positions p ON e.position_id = p.id " +
+            "LEFT JOIN employees e  ON s.employee_id = e.id " +
+            "LEFT JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 = '' OR (LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "               OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', ?1, '%')) " +
@@ -41,8 +41,8 @@ public interface SalaryAdjustmentRepository extends JpaRepository<SalaryAdjustme
     List<SalaryAdjustment> getAllMyCreate(Integer userId, Integer statusId);
 
     @Query(value = "SELECT s.* FROM salary_adjustments s " +
-            "INNER JOIN employees e ON s.employee_id = e.id " +
-            "INNER JOIN positions p ON e.position_id = p.id " +
+            "LEFT JOIN employees e ON s.employee_id = e.id " +
+            "LEFT JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   s.created_by = ?1 " +
             "   AND (?2 = '' OR (LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?2, '%')) " +

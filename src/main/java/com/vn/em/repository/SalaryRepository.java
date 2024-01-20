@@ -13,14 +13,14 @@ import java.util.List;
 public interface SalaryRepository extends JpaRepository<Salary, Integer> {
     @Query(value = "SELECT COUNT(*) " +
             "FROM salaries s " +
-            "INNER JOIN attendances a ON s.attendance_id = a.id " +
+            "LEFT JOIN attendances a ON s.attendance_id = a.id " +
             "WHERE a.year = ?1 AND a.month = ?2", nativeQuery = true)
     int countByYearAndMonth(Integer year, Integer month);
 
     @Query(value = "SELECT s.* FROM salaries s " +
-            "INNER JOIN attendances a ON s.attendance_id = a.id " +
-            "INNER JOIN employees e ON a.employee_id = e.id " +
-            "INNER JOIN positions p ON e.position_id = p.id " +
+            "LEFT JOIN attendances a ON s.attendance_id = a.id " +
+            "LEFT JOIN employees e ON a.employee_id = e.id " +
+            "LEFT JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 IS NULL OR a.year = ?1) " +
             "   AND (?2 IS NULL OR a.month = ?2) " +
@@ -28,9 +28,9 @@ public interface SalaryRepository extends JpaRepository<Salary, Integer> {
     List<Salary> getAll(Integer year, Integer month, Integer departmentId);
 
     @Query(value = "SELECT s.* FROM salaries s " +
-            "INNER JOIN attendances a ON s.attendance_id = a.id " +
-            "INNER JOIN employees e ON a.employee_id = e.id " +
-            "INNER JOIN positions p ON e.position_id = p.id " +
+            "LEFT JOIN attendances a ON s.attendance_id = a.id " +
+            "LEFT JOIN employees e ON a.employee_id = e.id " +
+            "LEFT JOIN positions p ON e.position_id = p.id " +
             "WHERE " +
             "   (?1 = '' OR (LOWER(e.employee_code) LIKE LOWER(CONCAT('%', ?1, '%')) " +
             "                   OR LOWER(e.full_name) LIKE LOWER(CONCAT('%', ?1, '%')) " +

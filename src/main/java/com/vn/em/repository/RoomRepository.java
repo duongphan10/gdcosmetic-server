@@ -10,14 +10,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Integer> {
 
-    @Query(value = "SELECT " +
-            "    r.* " +
-            "FROM " +
-            "    rooms r " +
-            "        LEFT JOIN " +
-            "    user_rooms ur ON r.id = ur.room_id " +
-            "        LEFT JOIN " +
-            "    messages m ON r.id = m.room_id " +
+    @Query(value = "SELECT r.* FROM rooms r " +
+            "LEFT JOIN user_rooms ur ON r.id = ur.room_id " +
+            "LEFT JOIN messages m ON r.id = m.room_id " +
             "WHERE " +
             "    ur.user_id = ?1 " +
             "GROUP BY r.id " +
