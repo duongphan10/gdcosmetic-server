@@ -15,6 +15,9 @@ public class NotificationDto {
     private Integer type;
     private String message;
     private Boolean seen;
+    private Integer fromId;
+    private String fromFullName;
+    private String fromAvatar;
     private String createdDate;
     private String lastModifiedDate;
 

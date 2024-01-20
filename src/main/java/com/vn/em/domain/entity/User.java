@@ -50,6 +50,9 @@ public class User extends DateAuditing {
     @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<Notification> notifications;
 
+    @OneToMany(mappedBy = "from", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<Notification> notificationSets;
+
     @JsonIgnore
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Code code;

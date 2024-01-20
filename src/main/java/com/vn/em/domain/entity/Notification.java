@@ -27,4 +27,8 @@ public class Notification extends DateAuditing {
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_NOTIFICATION_USER"))
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "from_id", foreignKey = @ForeignKey(name = "FK_NOTIFICATION_USER_FROM"))
+    private User from;
+
 }

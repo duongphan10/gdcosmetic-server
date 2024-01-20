@@ -21,9 +21,9 @@ public interface SalaryAdjustmentService {
 
     PaginationResponseDto<SalaryAdjustmentDto> searchMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
 
-    SalaryAdjustmentDto create(SalaryAdjustmentCreateDto salaryAdjustmentCreateDto);
+    SalaryAdjustmentDto create(SalaryAdjustmentCreateDto salaryAdjustmentCreateDto, Integer userId);
 
-    SalaryAdjustmentDto updateById(Integer id, SalaryAdjustmentUpdateDto salaryAdjustmentUpdateDto);
+    SalaryAdjustmentDto updateById(Integer id, SalaryAdjustmentUpdateDto salaryAdjustmentUpdateDto, Integer userId);
 
     CommonResponseDto deleteById(Integer id, Integer userId);
 }

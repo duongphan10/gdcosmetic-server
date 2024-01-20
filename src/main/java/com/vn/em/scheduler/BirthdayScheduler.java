@@ -38,10 +38,10 @@ public class BirthdayScheduler {
                 for (User user : users) {
                     if (!Objects.equals(employee.getUser().getId(), user.getId())) {
                         notificationDto = notificationService.create(DataConstant.Notification.BIRTH_YOU.getType(),
-                                message, user);
+                                message, user, null);
                     } else {
                         notificationDto = notificationService.create(DataConstant.Notification.BIRTH_MY.getType(),
-                                DataConstant.Notification.BIRTH_MY.getMessage(), user);
+                                DataConstant.Notification.BIRTH_MY.getMessage(), user, null);
                     }
 
                     server.getRoomOperations(user.getId().toString())

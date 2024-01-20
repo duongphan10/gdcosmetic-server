@@ -115,7 +115,7 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
     }
 
     @Override
-    public SalaryAdjustmentDto create(SalaryAdjustmentCreateDto salaryAdjustmentCreateDto) {
+    public SalaryAdjustmentDto create(SalaryAdjustmentCreateDto salaryAdjustmentCreateDto, Integer userId) {
         Employee employee = employeeRepository.findById(salaryAdjustmentCreateDto.getEmployeeId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND_ID, new String[]{salaryAdjustmentCreateDto.getEmployeeId().toString()}));
         SalaryAdjustment salaryAdjustment = salaryAdjustmentMapper.mapSalaryAdjustmentCreateDtoToSalaryAdjustment(salaryAdjustmentCreateDto);
@@ -128,7 +128,7 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
         List<User> users = userRepository.getAllByRole(roleRepository.findByRoleName(DataConstant.Role.LEADER.getName()));
         for (User user : users) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.SAL_CREATE.getType(),
-                    DataConstant.Notification.SAL_CREATE.getMessage(), user);
+                    DataConstant.Notification.SAL_CREATE.getMessage(), user, userId);
             server.getRoomOperations(user.getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
@@ -137,7 +137,7 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
     }
 
     @Override
-    public SalaryAdjustmentDto updateById(Integer id, SalaryAdjustmentUpdateDto salaryAdjustmentUpdateDto) {
+    public SalaryAdjustmentDto updateById(Integer id, SalaryAdjustmentUpdateDto salaryAdjustmentUpdateDto, Integer userId) {
         SalaryAdjustment salaryAdjustment = salaryAdjustmentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.SalaryAdjustment.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         if (!salaryAdjustment.getStatus().getId().equals(DataConstant.Status.PENDING.getId())) {
@@ -155,16 +155,16 @@ public class SalaryAdjustmentServiceImpl implements SalaryAdjustmentService {
 
             if (salaryAdjustment.getEmployee().getUser() != null) {
                 notificationDto = notificationService.create(DataConstant.Notification.SAL_UPDATE.getType(),
-                        DataConstant.Notification.SAL_UPDATE.getMessage(), salaryAdjustment.getEmployee().getUser());
+                        DataConstant.Notification.SAL_UPDATE.getMessage(), salaryAdjustment.getEmployee().getUser(), userId);
                 server.getRoomOperations(salaryAdjustment.getEmployee().getUser().getId().toString())
                         .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
             }
 
             notificationDto = notificationService.create(DataConstant.Notification.SAL_APPROVED.getType(),
-                    DataConstant.Notification.SAL_APPROVED.getMessage(), salaryAdjustment.getCreatedBy());
+                    DataConstant.Notification.SAL_APPROVED.getMessage(), salaryAdjustment.getCreatedBy(), userId);
         } else {
             notificationDto = notificationService.create(DataConstant.Notification.SAL_REJECTED.getType(),
-                    DataConstant.Notification.SAL_REJECTED.getMessage(), salaryAdjustment.getCreatedBy());
+                    DataConstant.Notification.SAL_REJECTED.getMessage(), salaryAdjustment.getCreatedBy(), userId);
 
         }
         server.getRoomOperations(salaryAdjustment.getCreatedBy().toString())

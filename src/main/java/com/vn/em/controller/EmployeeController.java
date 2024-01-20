@@ -49,7 +49,7 @@ public class EmployeeController {
     @Operation(summary = "API get all employee by role")
     @GetMapping(UrlConstant.Employee.GET_ALL_BY_ROLE)
     public ResponseEntity<?> getAllEmployeeByRole(@RequestParam(name = "departmentId", required = false, defaultValue = "0") Integer departmentId,
-                                                  @RequestParam(name = "roleId", required = false, defaultValue = "0") Integer roleId ){
+                                                  @RequestParam(name = "roleId", required = false, defaultValue = "0") Integer roleId) {
         return VsResponseUtil.success(employeeService.getAllByRole(departmentId, roleId));
     }
 

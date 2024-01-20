@@ -110,7 +110,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDto create(ProjectCreateDto projectCreateDto) {
+    public ProjectDto create(ProjectCreateDto projectCreateDto, Integer userId) {
         Employee employee = null;
         if (projectCreateDto.getProjectManagerId() != null) {
             employee = employeeRepository.findById(projectCreateDto.getProjectManagerId())
@@ -124,7 +124,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (employee != null && employee.getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_CREATE.getType(),
-                    DataConstant.Notification.PRO_CREATE.getMessage(), employee.getUser().getId());
+                    DataConstant.Notification.PRO_CREATE.getMessage(), employee.getUser().getId(), userId);
             server.getRoomOperations(employee.getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
@@ -133,7 +133,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDto updateById(Integer id, ProjectUpdateDto projectUpdateDto) {
+    public ProjectDto updateById(Integer id, ProjectUpdateDto projectUpdateDto, Integer userId) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Project.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         Employee employee = null;
@@ -152,13 +152,13 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (employee != null && employee.getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_CREATE.getType(),
-                    DataConstant.Notification.PRO_CREATE.getMessage(), employee.getUser().getId());
+                    DataConstant.Notification.PRO_CREATE.getMessage(), employee.getUser().getId(), userId);
             server.getRoomOperations(employee.getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
         if (!checkStatus && project.getProjectManager() != null && project.getProjectManager().getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_UPDATE.getType(),
-                    DataConstant.Notification.PRO_UPDATE.getMessage(), project.getProjectManager().getUser().getId());
+                    DataConstant.Notification.PRO_UPDATE.getMessage(), project.getProjectManager().getUser().getId(), userId);
             server.getRoomOperations(project.getProjectManager().getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
@@ -167,14 +167,14 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public CommonResponseDto deleteById(Integer id) {
+    public CommonResponseDto deleteById(Integer id, Integer userId) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Project.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         projectRepository.delete(project);
 
         if (project.getProjectManager() != null && project.getProjectManager().getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.PRO_DELETE.getType(),
-                    DataConstant.Notification.PRO_DELETE.getMessage(), project.getProjectManager().getUser().getId());
+                    DataConstant.Notification.PRO_DELETE.getMessage(), project.getProjectManager().getUser().getId(), userId);
             server.getRoomOperations(project.getProjectManager().getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }

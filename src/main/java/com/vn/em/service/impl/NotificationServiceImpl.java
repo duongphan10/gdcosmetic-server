@@ -32,16 +32,26 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationMapper notificationMapper;
 
     @Override
-    public NotificationDto create(Integer type, String message, User user) {
-        Notification notification = new Notification(null, type, message, false, user);
+    public NotificationDto create(Integer type, String message, User user, Integer fromId) {
+        User from = null;
+        if (fromId != null) {
+            from = userRepository.findById(fromId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{fromId.toString()}));
+        }
+        Notification notification = new Notification(null, type, message, false, user, from);
         return notificationMapper.mapNotificationToNotificationDto(notificationRepository.save(notification));
     }
 
     @Override
-    public NotificationDto create(Integer type, String message, Integer userId) {
+    public NotificationDto create(Integer type, String message, Integer userId, Integer fromId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
-        Notification notification = new Notification(null, type, message, false, user);
+        User from = null;
+        if (fromId != null) {
+            from = userRepository.findById(fromId)
+                    .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{fromId.toString()}));
+        }
+        Notification notification = new Notification(null, type, message, false, user, from);
         return notificationMapper.mapNotificationToNotificationDto(notificationRepository.save(notification));
     }
 
@@ -60,10 +70,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public int countUnreadNotification(Integer userId) {
+    public List<NotificationDto> getUnreadNotification(Integer userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.User.ERR_NOT_FOUND_ID, new String[]{userId.toString()}));
-        return notificationRepository.countUnreadByUserId(userId);
+        List<Notification> notifications = notificationRepository.getUnreadByUserId(userId);
+        return notificationMapper.mapNotificationsToNotificationDtos(notifications);
     }
 
     @Override

@@ -60,8 +60,7 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = new ArrayList<>();
         if (type == 0) {
             tasks = taskRepository.getAll(projectId, statusId);
-        }
-        else {
+        } else {
             if (type == 1) {
                 tasks = taskRepository.getAllMyCreated(userId, projectId, statusId);
             }
@@ -121,7 +120,7 @@ public class TaskServiceImpl implements TaskService {
 
         if (employee != null && employee.getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_CREATE.getType(),
-                    DataConstant.Notification.TAS_CREATE.getMessage(), employee.getUser().getId());
+                    DataConstant.Notification.TAS_CREATE.getMessage(), employee.getUser().getId(), userId);
             server.getRoomOperations(employee.getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
@@ -151,13 +150,13 @@ public class TaskServiceImpl implements TaskService {
 
         if (employee != null && employee.getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_CREATE.getType(),
-                    DataConstant.Notification.TAS_CREATE.getMessage(), employee.getUser().getId());
+                    DataConstant.Notification.TAS_CREATE.getMessage(), employee.getUser().getId(), userId);
             server.getRoomOperations(employee.getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
         if (!checkStatus && task.getEmployee() != null && task.getEmployee().getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_UPDATE.getType(),
-                    DataConstant.Notification.TAS_UPDATE.getMessage(), task.getEmployee().getUser().getId());
+                    DataConstant.Notification.TAS_UPDATE.getMessage(), task.getEmployee().getUser().getId(), userId);
             server.getRoomOperations(task.getEmployee().getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
@@ -176,7 +175,7 @@ public class TaskServiceImpl implements TaskService {
 
         if (task.getEmployee() != null && task.getEmployee().getUser() != null) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.TAS_DELETE.getType(),
-                    DataConstant.Notification.TAS_DELETE.getMessage(), task.getEmployee().getUser().getId());
+                    DataConstant.Notification.TAS_DELETE.getMessage(), task.getEmployee().getUser().getId(), userId);
             server.getRoomOperations(task.getEmployee().getUser().getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }

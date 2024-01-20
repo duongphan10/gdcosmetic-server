@@ -75,8 +75,10 @@ public class SalaryAdjustmentController {
     @Operation(summary = "API create salary adjustment")
     @PostMapping(UrlConstant.SalaryAdjustment.CREATE)
     @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
-    public ResponseEntity<?> createSalaryAdjustment(@Valid @RequestBody SalaryAdjustmentCreateDto salaryAdjustmentCreateDto) {
-        return VsResponseUtil.success(salaryAdjustmentService.create(salaryAdjustmentCreateDto));
+    public ResponseEntity<?> createSalaryAdjustment(@Valid @RequestBody SalaryAdjustmentCreateDto salaryAdjustmentCreateDto,
+                                                    @Parameter(name = "principal", hidden = true)
+                                                    @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(salaryAdjustmentService.create(salaryAdjustmentCreateDto, user.getId()));
     }
 
     @Tag(name = "salary-adjustment-controller")
@@ -84,8 +86,10 @@ public class SalaryAdjustmentController {
     @PatchMapping(UrlConstant.SalaryAdjustment.UPDATE)
     @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updateSalaryAdjustmentById(@PathVariable Integer id,
-                                                        @Valid @RequestBody SalaryAdjustmentUpdateDto salaryAdjustmentUpdateDto) {
-        return VsResponseUtil.success(salaryAdjustmentService.updateById(id, salaryAdjustmentUpdateDto));
+                                                        @Valid @RequestBody SalaryAdjustmentUpdateDto salaryAdjustmentUpdateDto,
+                                                        @Parameter(name = "principal", hidden = true)
+                                                        @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(salaryAdjustmentService.updateById(id, salaryAdjustmentUpdateDto, user.getId()));
     }
 
     @Tag(name = "salary-adjustment-controller")

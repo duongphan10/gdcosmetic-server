@@ -55,10 +55,10 @@ public class RecognitionController {
     @Operation(summary = "API get my recognition create")
     @GetMapping(UrlConstant.Recognition.GET_MY_CREATE)
     public ResponseEntity<?> getMyRecognitionCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
-                                                       @RequestParam(name = "statusId", required = false) Integer statusId,
+                                                    @RequestParam(name = "statusId", required = false) Integer statusId,
                                                     @RequestParam(name = "type", required = false) Boolean type,
-                                                       @Parameter(name = "principal", hidden = true)
-                                                       @CurrentUser UserPrincipal user) {
+                                                    @Parameter(name = "principal", hidden = true)
+                                                    @CurrentUser UserPrincipal user) {
         return VsResponseUtil.success(recognitionService.getMyCreate(user.getId(), departmentId, statusId, type));
     }
 
@@ -66,10 +66,10 @@ public class RecognitionController {
     @Operation(summary = "API search my recognition create")
     @GetMapping(UrlConstant.Recognition.SEARCH_MY_CREATE)
     public ResponseEntity<?> searchRecognitionCreate(@RequestParam(name = "departmentId", required = false) Integer departmentId,
-                                                       @RequestParam(name = "statusId", required = false) Integer statusId,
-                                                       @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto,
-                                                       @Parameter(name = "principal", hidden = true)
-                                                       @CurrentUser UserPrincipal user) {
+                                                     @RequestParam(name = "statusId", required = false) Integer statusId,
+                                                     @Valid @ParameterObject PaginationFullRequestDto paginationFullRequestDto,
+                                                     @Parameter(name = "principal", hidden = true)
+                                                     @CurrentUser UserPrincipal user) {
         return VsResponseUtil.success(recognitionService.searchMyCreate(user.getId(), departmentId, statusId, paginationFullRequestDto));
     }
 
@@ -77,8 +77,10 @@ public class RecognitionController {
     @Operation(summary = "API create recognition")
     @PostMapping(UrlConstant.Recognition.CREATE)
     @PreAuthorize("hasAnyRole('ROLE_LEADER', 'ROLE_MANAGER')")
-    public ResponseEntity<?> createRecognition(@Valid @RequestBody RecognitionCreateDto recognitionCreateDto) {
-        return VsResponseUtil.success(recognitionService.create(recognitionCreateDto));
+    public ResponseEntity<?> createRecognition(@Valid @RequestBody RecognitionCreateDto recognitionCreateDto,
+                                               @Parameter(name = "principal", hidden = true)
+                                               @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(recognitionService.create(recognitionCreateDto, user.getId()));
     }
 
     @Tag(name = "recognition-controller")
@@ -86,8 +88,10 @@ public class RecognitionController {
     @PatchMapping(UrlConstant.Recognition.UPDATE)
     @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updateRecognitionById(@PathVariable Integer id,
-                                                   @Valid @RequestBody RecognitionUpdateDto recognitionUpdateDto) {
-        return VsResponseUtil.success(recognitionService.updateById(id, recognitionUpdateDto));
+                                                   @Valid @RequestBody RecognitionUpdateDto recognitionUpdateDto,
+                                                   @Parameter(name = "principal", hidden = true)
+                                                   @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(recognitionService.updateById(id, recognitionUpdateDto, user.getId()));
     }
 
     @Tag(name = "recognition-controller")

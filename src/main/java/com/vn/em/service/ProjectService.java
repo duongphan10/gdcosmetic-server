@@ -21,10 +21,10 @@ public interface ProjectService {
 
     PaginationResponseDto<ProjectDto> searchByUserId(Integer userId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
 
-    ProjectDto create(ProjectCreateDto projectCreateDto);
+    ProjectDto create(ProjectCreateDto projectCreateDto, Integer userId);
 
-    ProjectDto updateById(Integer id, ProjectUpdateDto projectUpdateDto);
+    ProjectDto updateById(Integer id, ProjectUpdateDto projectUpdateDto, Integer userId);
 
-    CommonResponseDto deleteById(Integer id);
+    CommonResponseDto deleteById(Integer id, Integer userId);
 
 }

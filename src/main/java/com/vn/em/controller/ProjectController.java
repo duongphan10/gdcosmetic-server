@@ -74,8 +74,10 @@ public class ProjectController {
     @Operation(summary = "API create project")
     @PostMapping(UrlConstant.Project.CREATE)
     @PreAuthorize("hasRole('ROLE_LEADER')")
-    public ResponseEntity<?> createProject(@Valid @RequestBody ProjectCreateDto projectCreateDto) {
-        return VsResponseUtil.success(projectService.create(projectCreateDto));
+    public ResponseEntity<?> createProject(@Valid @RequestBody ProjectCreateDto projectCreateDto,
+                                           @Parameter(name = "principal", hidden = true)
+                                           @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(projectService.create(projectCreateDto, user.getId()));
     }
 
     @Tag(name = "project-controller")
@@ -83,16 +85,20 @@ public class ProjectController {
     @PatchMapping(UrlConstant.Project.UPDATE)
     @PreAuthorize("hasRole('ROLE_LEADER')")
     public ResponseEntity<?> updateProjectById(@PathVariable Integer id,
-                                               @Valid @RequestBody ProjectUpdateDto projectUpdateDto) {
-        return VsResponseUtil.success(projectService.updateById(id, projectUpdateDto));
+                                               @Valid @RequestBody ProjectUpdateDto projectUpdateDto,
+                                               @Parameter(name = "principal", hidden = true)
+                                               @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(projectService.updateById(id, projectUpdateDto, user.getId()));
     }
 
     @Tag(name = "project-controller")
     @Operation(summary = "API delete project by id")
     @DeleteMapping(UrlConstant.Project.DELETE)
     @PreAuthorize("hasRole('ROLE_LEADER')")
-    public ResponseEntity<?> deleteProjectById(@PathVariable Integer id) {
-        return VsResponseUtil.success(projectService.deleteById(id));
+    public ResponseEntity<?> deleteProjectById(@PathVariable Integer id,
+                                               @Parameter(name = "principal", hidden = true)
+                                               @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(projectService.deleteById(id, user.getId()));
     }
 
 }

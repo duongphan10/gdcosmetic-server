@@ -26,7 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -120,7 +119,7 @@ public class RecognitionServiceImpl implements RecognitionService {
     }
 
     @Override
-    public RecognitionDto create(RecognitionCreateDto recognitionCreateDto) {
+    public RecognitionDto create(RecognitionCreateDto recognitionCreateDto, Integer userId) {
         Employee employee = employeeRepository.findById(recognitionCreateDto.getEmployeeId())
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Employee.ERR_NOT_FOUND_ID, new String[]{recognitionCreateDto.getEmployeeId().toString()}));
         Recognition recognition = recognitionMapper.mapRecognitionCreateDtoToRecognition(recognitionCreateDto);
@@ -131,7 +130,7 @@ public class RecognitionServiceImpl implements RecognitionService {
         List<User> users = userRepository.getAllByRole(roleRepository.findByRoleName(DataConstant.Role.LEADER.getName()));
         for (User user : users) {
             NotificationDto notificationDto = notificationService.create(DataConstant.Notification.SAL_CREATE.getType(),
-                    DataConstant.Notification.REC_CREATE.getMessage(), user);
+                    DataConstant.Notification.REC_CREATE.getMessage(), user, userId);
             server.getRoomOperations(user.getId().toString())
                     .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);
         }
@@ -140,7 +139,7 @@ public class RecognitionServiceImpl implements RecognitionService {
     }
 
     @Override
-    public RecognitionDto updateById(Integer id, RecognitionUpdateDto recognitionUpdateDto) {
+    public RecognitionDto updateById(Integer id, RecognitionUpdateDto recognitionUpdateDto, Integer userId) {
         Recognition recognition = recognitionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.Recognition.ERR_NOT_FOUND_ID, new String[]{id.toString()}));
         if (!recognition.getStatus().getId().equals(DataConstant.Status.PENDING.getId())) {
@@ -156,10 +155,10 @@ public class RecognitionServiceImpl implements RecognitionService {
         NotificationDto notificationDto;
         if (status.getId() == DataConstant.Status.APPROVED.getId()) {
             notificationDto = notificationService.create(DataConstant.Notification.REC_APPROVED.getType(),
-                    DataConstant.Notification.REC_APPROVED.getMessage(), recognition.getCreatedBy());
+                    DataConstant.Notification.REC_APPROVED.getMessage(), recognition.getCreatedBy(), userId);
         } else {
             notificationDto = notificationService.create(DataConstant.Notification.REC_REJECTED.getType(),
-                    DataConstant.Notification.REC_REJECTED.getMessage(), recognition.getCreatedBy());
+                    DataConstant.Notification.REC_REJECTED.getMessage(), recognition.getCreatedBy(), userId);
         }
         server.getRoomOperations(recognition.getCreatedBy().toString())
                 .sendEvent(CommonConstant.Event.SERVER_SEND_NOTIFICATION, notificationDto);

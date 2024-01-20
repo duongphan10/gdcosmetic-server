@@ -14,6 +14,9 @@ import java.util.List;
 public interface NotificationMapper {
     @Mappings({
             @Mapping(target = "userId", source = "user.id"),
+            @Mapping(target = "fromId", source = "from.id"),
+            @Mapping(target = "fromFullName", source = "from.employee.fullName"),
+            @Mapping(target = "fromAvatar", source = "from.avatar"),
             @Mapping(target = "createdDate", source = "createdDate", dateFormat = CommonConstant.PATTERN_DATE_TIME),
             @Mapping(target = "lastModifiedDate", source = "lastModifiedDate", dateFormat = CommonConstant.PATTERN_DATE_TIME),
     })

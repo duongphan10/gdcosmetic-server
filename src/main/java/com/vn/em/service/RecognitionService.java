@@ -21,9 +21,9 @@ public interface RecognitionService {
 
     PaginationResponseDto<RecognitionDto> searchMyCreate(Integer userId, Integer departmentId, Integer statusId, PaginationFullRequestDto paginationFullRequestDto);
 
-    RecognitionDto create(RecognitionCreateDto recognitionCreateDto);
+    RecognitionDto create(RecognitionCreateDto recognitionCreateDto, Integer userId);
 
-    RecognitionDto updateById(Integer id, RecognitionUpdateDto recognitionUpdateDto);
+    RecognitionDto updateById(Integer id, RecognitionUpdateDto recognitionUpdateDto, Integer userId);
 
     CommonResponseDto deleteById(Integer id, Integer userId);
 }

@@ -34,11 +34,11 @@ public class NotificationController {
     }
 
     @Tag(name = "notification-controller")
-    @Operation(summary = "API count my unread notification")
+    @Operation(summary = "API get unread notification")
     @GetMapping(UrlConstant.Notification.GET_UNREAD)
-    public ResponseEntity<?> countMyUnreadNotification(@Parameter(name = "principal", hidden = true)
-                                                       @CurrentUser UserPrincipal user) {
-        return VsResponseUtil.success(notificationService.countUnreadNotification(user.getId()));
+    public ResponseEntity<?> getUnreadNotification(@Parameter(name = "principal", hidden = true)
+                                                   @CurrentUser UserPrincipal user) {
+        return VsResponseUtil.success(notificationService.getUnreadNotification(user.getId()));
     }
 
     @Tag(name = "notification-controller")

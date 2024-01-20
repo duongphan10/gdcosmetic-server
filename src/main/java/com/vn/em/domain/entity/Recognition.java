@@ -4,7 +4,6 @@ import com.vn.em.domain.entity.common.UserDateAuditing;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor

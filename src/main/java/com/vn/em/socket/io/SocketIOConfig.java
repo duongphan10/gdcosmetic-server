@@ -29,9 +29,9 @@ public class SocketIOConfig {
     @Bean
     public SocketIOServer socketIOServer() {
         Configuration config = new Configuration();
-        config.setHostname(host);
+        //config.setHostname(host);
         config.setPort(port);
-        //config.setOrigin("*");
+        config.setOrigin("*");
         config.setAuthorizationListener(handshakeData -> {
             String accessToken = handshakeData.getSingleUrlParam(CommonConstant.Key.ACCESS_TOKEN);
             if (!StringUtils.hasText(accessToken) || !tokenProvider.validateToken(accessToken)) {

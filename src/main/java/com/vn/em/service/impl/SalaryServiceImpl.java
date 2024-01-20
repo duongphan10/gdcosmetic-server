@@ -91,7 +91,7 @@ public class SalaryServiceImpl implements SalaryService {
         }
         if (!attendanceRepository.existsByYearAndMonth(year, month)) {
             throw new NotFoundException(ErrorMessage.Attendance.ERR_NOT_FOUND,
-                    new String[]{ String.format("%02d", month), year.toString()});
+                    new String[]{String.format("%02d", month), year.toString()});
         }
 
         List<Salary> salaries = new ArrayList<>();
